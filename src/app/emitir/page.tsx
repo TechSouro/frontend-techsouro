@@ -123,13 +123,11 @@ export default function Emitir() {
               children={"Emitir meu Título"}
               color="green"
             />
-            <a href="" className="w-full">
-              <Button
-                type="submit"
-                children={"Emitir meu Título no DREX"}
-                color="black"
-              />
-            </a>
+            <Button
+              type="submit"
+              children={"Emitir meu Título no DREX"}
+              color="black"
+            />
           </div>
         </form>
       </div>

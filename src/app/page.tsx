@@ -7,15 +7,22 @@ import { Title } from "@/components/Title";
 import { useSmartContext } from "@/contexts/SmartContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const [isChecked, setIsChecked] = useState(false);
   const { login } = useSmartContext();
   const router = useRouter();
+  const { user } = useSmartContext();
 
   async function onLogin() {
     await login();
     return router.push("/dashboard");
+  }
+
+  async function onAccess() {
+    if (user) return router.push("/dashboard");
+    toast.error("Precisa criar uma conta ou fazer login para acessar!");
   }
 
   return (
@@ -41,9 +48,11 @@ export default function Home() {
           label="Mantenha-me conectado"
           className="self-start"
         />
-        <a href="" className="w-full">
-          <Button children={"Acesse a plataforma"} color="green" />
-        </a>
+        <Button
+          children={"Acesse a plataforma"}
+          color="green"
+          onClick={onAccess}
+        />
         <Title fontSize={18} fontColor="#0000007e">
           Não tem uma conta?{" "}
           <a href="/cadastro" className="text-[#6CF13F]">

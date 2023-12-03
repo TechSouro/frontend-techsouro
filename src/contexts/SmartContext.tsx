@@ -10,22 +10,22 @@ import { StorageHelper } from "@/helpers/StorageHelper";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import { IBundler, Bundler } from "@biconomy/bundler";
 import {
+  BiconomySmartAccount,
+  BiconomySmartAccountConfig,
   BiconomySmartAccountV2,
   DEFAULT_ENTRYPOINT_ADDRESS,
 } from "@biconomy/account";
 import { ethers } from "ethers";
 import { ChainId } from "@biconomy/core-types";
 import { ParticleAuthModule, ParticleProvider } from "@biconomy/particle-auth";
-import {
-  DEFAULT_ECDSA_OWNERSHIP_MODULE,
-  ECDSAOwnershipValidationModule,
-} from "@biconomy/modules";
 
 type SmartContextType = {
   login: () => Promise<void>;
   signer: ethers.Signer | null;
-  smartAccount: BiconomySmartAccountV2 | null;
+  smartAccount: BiconomySmartAccountV2;
   address: string;
+  provider: ethers.providers.Web3Provider | null;
+  user: ParticleAuthModule.UserInfo;
 };
 
 export const SmartContext = createContext<SmartContextType>(undefined!);
@@ -48,7 +48,10 @@ export const SmartContextProvider: React.FC<PropsWithChildren> = ({
   const [bundler, setBundler] = useState<IBundler | null>(null);
   const [paymaster, setPaymaster] = useState<IPaymaster | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
+  const [provider, setProvider] =
+    useState<ethers.providers.Web3Provider | null>(null);
   const address = StorageHelper.getItem("address");
+  const user = StorageHelper.getItem("user");
   const smartAccount = StorageHelper.getItem("smartAccount");
 
   useEffect(() => {
@@ -86,27 +89,20 @@ export const SmartContextProvider: React.FC<PropsWithChildren> = ({
       const userInfo = await particle.auth.login();
       console.log("Logged in user:", userInfo);
       const particleProvider = new ParticleProvider(particle.auth);
-      const web3Provider = new ethers.providers.Web3Provider(
-        particleProvider,
-        "any"
-      );
-
-      const module = await ECDSAOwnershipValidationModule.create({
-        signer: web3Provider.getSigner(),
-        moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
-      });
+      const web3Provider = new ethers.providers.Web3Provider(particleProvider);
+      setProvider(web3Provider);
       setSigner(web3Provider.getSigner());
-
-      let biconomySmartAccount = await BiconomySmartAccountV2.create({
+      const config: BiconomySmartAccountConfig = {
+        signer: web3Provider.getSigner(),
         chainId: ChainId.POLYGON_MUMBAI,
         bundler: bundler!,
         paymaster: paymaster!,
-        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-        defaultValidationModule: module,
-        activeValidationModule: module,
-      });
-      const address = await biconomySmartAccount.getAccountAddress();
-      StorageHelper.setItem("smartAccount", biconomySmartAccount);
+      };
+      const smartAccount = new BiconomySmartAccount(config);
+      await smartAccount.init();
+      const address = await smartAccount.getSmartAccountAddress();
+      StorageHelper.setItem("smartAccount", smartAccount);
+      StorageHelper.setItem("user", userInfo);
       StorageHelper.setItem("address", address);
     } catch (error) {
       console.error(error);
@@ -118,6 +114,8 @@ export const SmartContextProvider: React.FC<PropsWithChildren> = ({
     signer,
     smartAccount,
     address,
+    provider,
+    user,
   };
 
   return (

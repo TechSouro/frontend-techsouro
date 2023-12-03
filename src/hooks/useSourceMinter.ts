@@ -1,7 +1,6 @@
 import { sourceMinterAddress } from "@/constants";
 import { useSmartContext } from "@/contexts/SmartContext";
 import { SourceMinter__factory } from "@/contracts";
-import { getEthersProvider } from "@/utils";
 import {
   IHybridPaymaster,
   PaymasterMode,
@@ -18,7 +17,6 @@ export function useSourceMinter() {
   async function onEmission() {
     setIsLoading(true);
     try {
-      console.log(smartAccount);
       if (!smartAccount) return;
       const minTx = await contract.populateTransaction.emission(
         "16015286601757825753",
@@ -38,7 +36,7 @@ export function useSourceMinter() {
         to: sourceMinterAddress,
         data: minTx.data,
       };
-      
+      console.log(smartAccount);
       let userOp = await smartAccount.buildUserOp([tx1]);
       console.log(userOp);
       const biconomyPaymaster =

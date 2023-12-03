@@ -5,15 +5,18 @@ import Link from "next/link";
 export default function Dashboard() {
   const four = [
     { title: "Emissão de Títulos", icon: "", link: "/emitir" },
-    { title: "Oferta Pública", icon: "", link: "" },
-    { title: "Mercado Secundário", icon: "", link: "" },
-    { title: "Meus Investimentos", icon: "", link: "" },
+    { title: "Oferta Pública", icon: "", link: "/titulos/publicos" },
+    { title: "Mercado Secundário", icon: "", link: "/titulos/secundatios" },
+    { title: "Meus Investimentos", icon: "", link: "/titulos/investimentos" },
   ];
 
   return (
     <main className="flex min-h-screen flex-col bg-white bg-cover bg-no-repeat bg-center items-start justify-center px-40">
       <div className="w-full flex flex-col gap-8 items-start justify-center">
-        <Title children={"Bem ter você de volta, Samuel Vieira Ferreira!"} className="w-3/5" />
+        <Title
+          children={"Bem ter você de volta, Samuel Vieira Ferreira!"}
+          className="w-3/5"
+        />
         <div className="bg-[rgba(17,17,17,.30)] rounded-2xl w-full p-6">
           <div className="grid grid-cols-4 gap-6">
             {four.map((e, i) => (

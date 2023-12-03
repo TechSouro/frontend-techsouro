@@ -1,6 +1,5 @@
 import { tesouroDiretoAddress } from "@/constants";
 import { useState } from "react";
-import { TesouroDireto__factory } from "../../app/contracts";
 import toast from "react-hot-toast";
 import { useSmartContext } from "@/contexts/SmartContext";
 import {
@@ -8,6 +7,7 @@ import {
   SponsorUserOperationDto,
   PaymasterMode,
 } from "@biconomy/paymaster";
+import { TesouroDireto__factory } from "@/contracts";
 
 export function useTesouroDireto() {
   const [isLoading, setIsLoading] = useState(false);

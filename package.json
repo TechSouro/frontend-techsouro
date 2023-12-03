@@ -9,19 +9,46 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@biconomy/account": "^3.1.1",
+    "@biconomy/bundler": "^3.1.1",
+    "@biconomy/core-types": "2.0.0",
+    "@biconomy/mexa": "^3.0.6",
+    "@biconomy/modules": "^3.1.1",
+    "@biconomy/particle-auth": "^3.1.1",
+    "@biconomy/paymaster": "^3.1.1",
+    "@biconomy/smart-account": "^2.0.2",
+    "@typechain/ethers-v5": "^11.1.2",
+    "@web3auth/base": "^7.2.0",
+    "@web3auth/modal": "^7.2.0",
+    "@web3auth/torus-evm-adapter": "^7.2.0",
+    "@web3auth/torus-wallet-connector-plugin": "^7.2.0",
+    "axios": "^1.6.2",
+    "classnames": "^2.3.2",
+    "ethers": "5.7.2",
+    "luxon": "^3.4.4",
+    "net": "^1.0.2",
+    "next": "14.0.3",
+    "pino-pretty": "^10.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.0.3"
+    "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
+    "tls": "^0.0.1",
+    "typechain": "^8.3.2",
+    "viem": "^1.19.9",
+    "wagmi": "^1.4.7",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/luxon": "^3.3.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "postcss": "^8",
-    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.16",
     "eslint": "^8",
-    "eslint-config-next": "14.0.3"
+    "eslint-config-next": "14.0.3",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5"
   }
 }

@@ -17,7 +17,7 @@ export default function Concluido() {
           <a href="/titulos/investimentos" className="w-full">
             <Button children={"Meus Investimentos"} color="white" />
           </a>
-          <a href="/titulos/publicos" className="w-full">
+          <a href="/titulos" className="w-full">
             <Button children={"Comprar mais Títulos"} color="black" />
           </a>
         </div>

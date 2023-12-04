@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function Dashboard() {
   const four = [
     { title: "Emissão de Títulos", icon: "", link: "/emitir" },
-    { title: "Oferta Pública", icon: "", link: "/titulos/publicos" },
+    { title: "Oferta Pública", icon: "", link: "/titulos" },
     { title: "Mercado Secundário", icon: "", link: "/titulos/secundarios" },
     { title: "Meus Investimentos", icon: "", link: "/titulos/investimentos" },
   ];

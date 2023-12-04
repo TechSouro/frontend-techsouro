@@ -5,6 +5,7 @@ import { Title } from "@/components/Title";
 import { useSmartContext } from "@/contexts/SmartContext";
 import { useSourceMinter } from "@/hooks/useSourceMinter";
 import { useTesouroDireto } from "@/hooks/useTesouroDireto";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -14,6 +15,7 @@ export default function Emitir() {
   const [data, setData] = useState();
   const { onEmitTreasury, onOpenPublicOffer } = useTesouroDireto();
   const { onEmission } = useSourceMinter();
+  const { push } = useRouter();
 
   async function handleSelect({ target }: any) {
     setSelect(target.value);
@@ -25,12 +27,22 @@ export default function Emitir() {
   }
 
   async function onEmit() {
-    await onOpenPublicOffer(1);
-    await onEmitTreasury(data);
+    try {
+      await onOpenPublicOffer(0);
+      await onEmitTreasury(data);
+      push("/emitir/concluido");
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async function onEmitDrex() {
-    await onEmission(data);
+    try {
+      await onEmission(data);
+      push("/emitir/concluido");
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

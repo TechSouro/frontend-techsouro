@@ -6,7 +6,7 @@ export default function Dashboard() {
   const four = [
     { title: "Emissão de Títulos", icon: "", link: "/emitir" },
     { title: "Oferta Pública", icon: "", link: "/titulos/publicos" },
-    { title: "Mercado Secundário", icon: "", link: "/titulos/secundatios" },
+    { title: "Mercado Secundário", icon: "", link: "/titulos/secundarios" },
     { title: "Meus Investimentos", icon: "", link: "/titulos/investimentos" },
   ];
 
@@ -31,11 +31,10 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-6 w-full mt-6">
             <Link
-              href={""}
+              href={"/rastreabilidade"}
               className="h-[230px] bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out rounded-2xl text-4xl font-bold p-9 flex items-end w-full"
             >
               <p className="w-1/2 leading-[46px]">
-                {" "}
                 Dashboard de Rastreabilidade
               </p>
             </Link>

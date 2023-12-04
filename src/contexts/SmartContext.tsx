@@ -10,14 +10,16 @@ import { StorageHelper } from "@/helpers/StorageHelper";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import { IBundler, Bundler } from "@biconomy/bundler";
 import {
-  BiconomySmartAccount,
-  BiconomySmartAccountConfig,
   BiconomySmartAccountV2,
   DEFAULT_ENTRYPOINT_ADDRESS,
 } from "@biconomy/account";
 import { ethers } from "ethers";
 import { ChainId } from "@biconomy/core-types";
 import { ParticleAuthModule, ParticleProvider } from "@biconomy/particle-auth";
+import {
+  ECDSAOwnershipValidationModule,
+  DEFAULT_ECDSA_OWNERSHIP_MODULE,
+} from "@biconomy/modules";
 
 type SmartContextType = {
   login: () => Promise<void>;
@@ -92,16 +94,20 @@ export const SmartContextProvider: React.FC<PropsWithChildren> = ({
       const web3Provider = new ethers.providers.Web3Provider(particleProvider);
       setProvider(web3Provider);
       setSigner(web3Provider.getSigner());
-      const config: BiconomySmartAccountConfig = {
+      const module = await ECDSAOwnershipValidationModule.create({
         signer: web3Provider.getSigner(),
+        moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
+      });
+      let biconomySmartAccount = await BiconomySmartAccountV2.create({
         chainId: ChainId.POLYGON_MUMBAI,
         bundler: bundler!,
         paymaster: paymaster!,
-      };
-      const smartAccount = new BiconomySmartAccount(config);
-      await smartAccount.init();
-      const address = await smartAccount.getSmartAccountAddress();
-      StorageHelper.setItem("smartAccount", smartAccount);
+        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+        defaultValidationModule: module,
+        activeValidationModule: module,
+      });
+      const address = await biconomySmartAccount.getAccountAddress();
+      StorageHelper.setItem("smartAccount", biconomySmartAccount);
       StorageHelper.setItem("user", userInfo);
       StorageHelper.setItem("address", address);
     } catch (error) {

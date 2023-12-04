@@ -21,8 +21,8 @@ export default function Emitir() {
     const newValues = { ...values, titleType: select };
     console.log(newValues);
     await onEmission();
-    /* await onOpenPublicOffer(1);
-    await onEmitTreasury(newValues); */
+   /*  await onOpenPublicOffer(1); */
+    /* await onEmitTreasury(newValues); */
   }
 
   return (

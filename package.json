@@ -11,7 +11,7 @@
   "dependencies": {
     "@biconomy/account": "^3.1.1",
     "@biconomy/bundler": "^3.1.1",
-    "@biconomy/core-types": "2.0.0",
+    "@biconomy/core-types": "^3.1.1",
     "@biconomy/mexa": "^3.0.6",
     "@biconomy/modules": "^3.1.1",
     "@biconomy/particle-auth": "^3.1.1",

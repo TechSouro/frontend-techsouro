@@ -758,17 +758,6 @@
     node-fetch "^2.7.0"
     typechain "^8.1.1"
 
-"@biconomy/core-types@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@biconomy/core-types/-/core-types-2.0.0.tgz#19415c62cfc1e2afe3825396de7cd8058b550a64"
-  integrity sha512-Why9Dx2KipAFqvd4M0vO5avkxG1nrbzDWLfONlnR7KKeR44urhqu5Y3GPN1mrA+Icl+PEXWhhf4+x9fFHrTYVw==
-  dependencies:
-    "@ethersproject/bignumber" "^5.6.0"
-    "@ethersproject/contracts" "^5.6.0"
-    "@ethersproject/providers" "^5.7.0"
-    "@gnosis.pm/safe-deployments" "^1.16.0"
-    web3-core "^1.7.1"
-
 "@biconomy/core-types@^2.0.1", "@biconomy/core-types@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@biconomy/core-types/-/core-types-2.0.2.tgz#4d13be90b2cf654d89f692d51339ed531c4c1aa5"

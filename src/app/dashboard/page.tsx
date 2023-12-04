@@ -16,7 +16,7 @@ export default function Dashboard() {
     <main className="flex min-h-screen flex-col bg-white bg-cover bg-no-repeat bg-center items-start justify-center px-40">
       <div className="w-full flex flex-col gap-8 items-start justify-center">
         <Title
-          children={`Bem ter você de volta, ${user?.name}!`}
+          children={`Bom ter você de volta, ${user?.name}!`}
           className="w-3/5"
         />
         <div className="bg-[rgba(17,17,17,.30)] rounded-2xl w-full p-6">

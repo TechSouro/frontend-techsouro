@@ -17,9 +17,7 @@ export default function Pessoa() {
     console.log(values);
     try {
       toast.loading("Cadastrando...", { duration: 2000 });
-      const address = await login();
-      console.log(address)
-      await axios.post("/apis/kyc", { address });
+      await login();
       return push("/cadastro/concluido");
     } catch (error) {
       toast.error("Erro ao cadastrar!");

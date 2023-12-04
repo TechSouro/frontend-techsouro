@@ -11,7 +11,7 @@ export default function Concluido() {
           <Title children={"Título transferido com sucesso!"} />
         </div>
         <div className="flex flex-col gap-8 w-full">
-          <a href="/" className="w-full">
+        <a href="/dashboard" className="w-full">
             <Button children={"Página inicial"} color="green" />
           </a>
           <a href="/titulos/investimentos" className="w-full">

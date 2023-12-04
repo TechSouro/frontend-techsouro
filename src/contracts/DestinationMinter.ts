@@ -3,35 +3,35 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
+  TypedContractMethod,
 } from "./common";
 
 export declare namespace Client {
-  export type EVMTokenAmountStruct = { token: string; amount: BigNumberish };
+  export type EVMTokenAmountStruct = {
+    token: AddressLike;
+    amount: BigNumberish;
+  };
 
-  export type EVMTokenAmountStructOutput = [string, BigNumber] & {
+  export type EVMTokenAmountStructOutput = [token: string, amount: bigint] & {
     token: string;
-    amount: BigNumber;
+    amount: bigint;
   };
 
   export type Any2EVMMessageStruct = {
@@ -43,30 +43,26 @@ export declare namespace Client {
   };
 
   export type Any2EVMMessageStructOutput = [
-    string,
-    BigNumber,
-    string,
-    string,
-    Client.EVMTokenAmountStructOutput[]
+    messageId: string,
+    sourceChainSelector: bigint,
+    sender: string,
+    data: string,
+    destTokenAmounts: Client.EVMTokenAmountStructOutput[]
   ] & {
     messageId: string;
-    sourceChainSelector: BigNumber;
+    sourceChainSelector: bigint;
     sender: string;
     data: string;
     destTokenAmounts: Client.EVMTokenAmountStructOutput[];
   };
 }
 
-export interface DestinationMinterInterface extends utils.Interface {
-  functions: {
-    "ccipReceive((bytes32,uint64,bytes,bytes,(address,uint256)[]))": FunctionFragment;
-    "getRouter()": FunctionFragment;
-    "supportsInterface(bytes4)": FunctionFragment;
-  };
-
+export interface DestinationMinterInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic: "ccipReceive" | "getRouter" | "supportsInterface"
+    nameOrSignature: "ccipReceive" | "getRouter" | "supportsInterface"
   ): FunctionFragment;
+
+  getEvent(nameOrSignatureOrTopic: "MintCallSuccessfull"): EventFragment;
 
   encodeFunctionData(
     functionFragment: "ccipReceive",
@@ -87,119 +83,111 @@ export interface DestinationMinterInterface extends utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-
-  events: {
-    "MintCallSuccessfull()": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "MintCallSuccessfull"): EventFragment;
 }
 
-export interface MintCallSuccessfullEventObject {}
-export type MintCallSuccessfullEvent = TypedEvent<
-  [],
-  MintCallSuccessfullEventObject
->;
-
-export type MintCallSuccessfullEventFilter =
-  TypedEventFilter<MintCallSuccessfullEvent>;
+export namespace MintCallSuccessfullEvent {
+  export type InputTuple = [];
+  export type OutputTuple = [];
+  export interface OutputObject {}
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
 
 export interface DestinationMinter extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): DestinationMinter;
+  waitForDeployment(): Promise<this>;
 
   interface: DestinationMinterInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    ccipReceive(
-      message: Client.Any2EVMMessageStruct,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    getRouter(overrides?: CallOverrides): Promise<[string]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-  };
+  ccipReceive: TypedContractMethod<
+    [message: Client.Any2EVMMessageStruct],
+    [void],
+    "nonpayable"
+  >;
 
-  ccipReceive(
-    message: Client.Any2EVMMessageStruct,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
+  getRouter: TypedContractMethod<[], [string], "view">;
 
-  getRouter(overrides?: CallOverrides): Promise<string>;
+  supportsInterface: TypedContractMethod<
+    [interfaceId: BytesLike],
+    [boolean],
+    "view"
+  >;
 
-  supportsInterface(
-    interfaceId: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  callStatic: {
-    ccipReceive(
-      message: Client.Any2EVMMessageStruct,
-      overrides?: CallOverrides
-    ): Promise<void>;
+  getFunction(
+    nameOrSignature: "ccipReceive"
+  ): TypedContractMethod<
+    [message: Client.Any2EVMMessageStruct],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "getRouter"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "supportsInterface"
+  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
 
-    getRouter(overrides?: CallOverrides): Promise<string>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-  };
+  getEvent(
+    key: "MintCallSuccessfull"
+  ): TypedContractEvent<
+    MintCallSuccessfullEvent.InputTuple,
+    MintCallSuccessfullEvent.OutputTuple,
+    MintCallSuccessfullEvent.OutputObject
+  >;
 
   filters: {
-    "MintCallSuccessfull()"(): MintCallSuccessfullEventFilter;
-    MintCallSuccessfull(): MintCallSuccessfullEventFilter;
-  };
-
-  estimateGas: {
-    ccipReceive(
-      message: Client.Any2EVMMessageStruct,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    getRouter(overrides?: CallOverrides): Promise<BigNumber>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    ccipReceive(
-      message: Client.Any2EVMMessageStruct,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    getRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    "MintCallSuccessfull()": TypedContractEvent<
+      MintCallSuccessfullEvent.InputTuple,
+      MintCallSuccessfullEvent.OutputTuple,
+      MintCallSuccessfullEvent.OutputObject
+    >;
+    MintCallSuccessfull: TypedContractEvent<
+      MintCallSuccessfullEvent.InputTuple,
+      MintCallSuccessfullEvent.OutputTuple,
+      MintCallSuccessfullEvent.OutputObject
+    >;
   };
 }

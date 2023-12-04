@@ -6,6 +6,7 @@ import {
   PaymasterMode,
   SponsorUserOperationDto,
 } from "@biconomy/paymaster";
+import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -14,44 +15,11 @@ export function useOpenMarket() {
   const { smartAccount, signer } = useSmartContext();
   const contract = OpenMarket__factory.connect(openMarketAddress, signer!);
 
-  async function onPurchasePrimary(tokenId: number, amount: number) {
+  async function onPurchasePrimary(payload: any) {
     setIsLoading(true);
     try {
-      if (!smartAccount) return;
-      const minTx = await contract.populateTransaction.purchasePrimary(
-        tokenId,
-        amount
-      );
-      console.log(minTx);
-      const tx1 = {
-        to: openMarketAddress,
-        data: minTx.data,
-      };
-      console.log(smartAccount);
-      let userOp = await smartAccount.buildUserOp([tx1]);
-      console.log(userOp);
-      const biconomyPaymaster =
-        smartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
-      let paymasterServiceData: SponsorUserOperationDto = {
-        mode: PaymasterMode.SPONSORED,
-        smartAccountInfo: {
-          name: "BICONOMY",
-          version: "2.0.0",
-        },
-      };
-      if (!userOp) return;
-      const paymasterAndDataResponse =
-        await biconomyPaymaster.getPaymasterAndData(
-          userOp,
-          paymasterServiceData
-        );
-      console.log(paymasterAndDataResponse);
-      userOp.paymasterAndData = paymasterAndDataResponse.paymasterAndData;
-
-      const userOpResponse = await smartAccount.sendUserOp(userOp);
-      console.log("userOpHash", userOpResponse);
-      const response = await userOpResponse?.wait(1);
-      console.log("txHash", response?.receipt.transactionHash);
+      await axios.post("/apis/purchase-primary", payload);
+      setIsLoading(false);
     } catch (error) {
       toast.error("Erro ao realizar a compra, tente novamente!");
       setIsLoading(false);
@@ -59,49 +27,11 @@ export function useOpenMarket() {
     }
   }
 
-  async function onBuySecondary(
-    seller: string,
-    tokenId: number,
-    amount: number
-  ) {
+  async function onBuySecondary(payload: any) {
     setIsLoading(true);
     try {
-      if (!smartAccount) return;
-      const minTx = await contract.populateTransaction.buySecondary(
-        seller,
-        tokenId,
-        amount
-      );
-      console.log(minTx);
-      const tx1 = {
-        to: openMarketAddress,
-        data: minTx.data,
-      };
-      console.log(smartAccount);
-      let userOp = await smartAccount.buildUserOp([tx1]);
-      console.log(userOp);
-      const biconomyPaymaster =
-        smartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
-      let paymasterServiceData: SponsorUserOperationDto = {
-        mode: PaymasterMode.SPONSORED,
-        smartAccountInfo: {
-          name: "BICONOMY",
-          version: "2.0.0",
-        },
-      };
-      if (!userOp) return;
-      const paymasterAndDataResponse =
-        await biconomyPaymaster.getPaymasterAndData(
-          userOp,
-          paymasterServiceData
-        );
-      console.log(paymasterAndDataResponse);
-      userOp.paymasterAndData = paymasterAndDataResponse.paymasterAndData;
-
-      const userOpResponse = await smartAccount.sendUserOp(userOp);
-      console.log("userOpHash", userOpResponse);
-      const response = await userOpResponse?.wait(1);
-      console.log("txHash", response?.receipt.transactionHash);
+      await axios.post("/apis/buy-secondary", payload);
+      setIsLoading(false);
     } catch (error) {
       toast.error("Erro ao realizar a compra, tente novamente!");
       setIsLoading(false);
@@ -109,45 +39,11 @@ export function useOpenMarket() {
     }
   }
 
-  async function onSellMyUnits(tokenId: number, amount: number, price: number) {
+  async function onSellMyUnits(payload: any) {
     setIsLoading(true);
     try {
-      if (!smartAccount) return;
-      const minTx = await contract.populateTransaction.sellMyUnits(
-        tokenId,
-        amount,
-        price
-      );
-      console.log(minTx);
-      const tx1 = {
-        to: openMarketAddress,
-        data: minTx.data,
-      };
-      console.log(smartAccount);
-      let userOp = await smartAccount.buildUserOp([tx1]);
-      console.log(userOp);
-      const biconomyPaymaster =
-        smartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
-      let paymasterServiceData: SponsorUserOperationDto = {
-        mode: PaymasterMode.SPONSORED,
-        smartAccountInfo: {
-          name: "BICONOMY",
-          version: "2.0.0",
-        },
-      };
-      if (!userOp) return;
-      const paymasterAndDataResponse =
-        await biconomyPaymaster.getPaymasterAndData(
-          userOp,
-          paymasterServiceData
-        );
-      console.log(paymasterAndDataResponse);
-      userOp.paymasterAndData = paymasterAndDataResponse.paymasterAndData;
-
-      const userOpResponse = await smartAccount.sendUserOp(userOp);
-      console.log("userOpHash", userOpResponse);
-      const response = await userOpResponse?.wait(1);
-      console.log("txHash", response?.receipt.transactionHash);
+      await axios.post("/apis/sell-units", payload);
+      setIsLoading(false);
     } catch (error) {
       toast.error("Erro ao realizar a compra, tente novamente!");
       setIsLoading(false);
@@ -158,44 +54,8 @@ export function useOpenMarket() {
   async function onSafeTransferFrom(payload: any) {
     setIsLoading(true);
     try {
-      if (!smartAccount) return;
-      const minTx = await contract.populateTransaction.safeTransferFrom(
-        "tokenId",
-        "amount",
-        2,
-        2,
-        ""
-      );
-      console.log(minTx);
-      const tx1 = {
-        to: openMarketAddress,
-        data: minTx.data,
-      };
-      console.log(smartAccount);
-      let userOp = await smartAccount.buildUserOp([tx1]);
-      console.log(userOp);
-      const biconomyPaymaster =
-        smartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
-      let paymasterServiceData: SponsorUserOperationDto = {
-        mode: PaymasterMode.SPONSORED,
-        smartAccountInfo: {
-          name: "BICONOMY",
-          version: "2.0.0",
-        },
-      };
-      if (!userOp) return;
-      const paymasterAndDataResponse =
-        await biconomyPaymaster.getPaymasterAndData(
-          userOp,
-          paymasterServiceData
-        );
-      console.log(paymasterAndDataResponse);
-      userOp.paymasterAndData = paymasterAndDataResponse.paymasterAndData;
-
-      const userOpResponse = await smartAccount.sendUserOp(userOp);
-      console.log("userOpHash", userOpResponse);
-      const response = await userOpResponse?.wait(1);
-      console.log("txHash", response?.receipt.transactionHash);
+      await axios.post("/apis/safe-transfer", payload);
+      setIsLoading(false);
     } catch (error) {
       toast.error("Erro ao realizar a compra, tente novamente!");
       setIsLoading(false);
@@ -203,44 +63,11 @@ export function useOpenMarket() {
     }
   }
 
-  async function onRetrieveInvestment(tokenId: number, amount: number) {
+  async function onRetrieveInvestment(payload: any) {
     setIsLoading(true);
     try {
-      if (!smartAccount) return;
-      const minTx = await contract.populateTransaction.retrieveInvestment(
-        tokenId,
-        amount
-      );
-      console.log(minTx);
-      const tx1 = {
-        to: openMarketAddress,
-        data: minTx.data,
-      };
-      console.log(smartAccount);
-      let userOp = await smartAccount.buildUserOp([tx1]);
-      console.log(userOp);
-      const biconomyPaymaster =
-        smartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
-      let paymasterServiceData: SponsorUserOperationDto = {
-        mode: PaymasterMode.SPONSORED,
-        smartAccountInfo: {
-          name: "BICONOMY",
-          version: "2.0.0",
-        },
-      };
-      if (!userOp) return;
-      const paymasterAndDataResponse =
-        await biconomyPaymaster.getPaymasterAndData(
-          userOp,
-          paymasterServiceData
-        );
-      console.log(paymasterAndDataResponse);
-      userOp.paymasterAndData = paymasterAndDataResponse.paymasterAndData;
-
-      const userOpResponse = await smartAccount.sendUserOp(userOp);
-      console.log("userOpHash", userOpResponse);
-      const response = await userOpResponse?.wait(1);
-      console.log("txHash", response?.receipt.transactionHash);
+      await axios.post("/apis/retrieve", payload);
+      setIsLoading(false);
     } catch (error) {
       toast.error("Erro ao realizar a compra, tente novamente!");
       setIsLoading(false);

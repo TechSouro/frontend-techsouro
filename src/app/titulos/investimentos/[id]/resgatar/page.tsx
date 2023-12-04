@@ -14,11 +14,15 @@ export default function Resgatar({ params }: any) {
   const newAddress = AddressUtils.hideAddress(address);
 
   async function onResg(values: any) {
-    const id = params.id;
-    console.log(id);
+    const tokenId = params.id;
+    const { amount, unitValue } = values;
+    const payload = { tokenId, amount, unitValue };
+
     try {
-      await onRetrieveInvestment(id, values.amount);
-      return router.push(`/titulos/investimentos/${id}/resgatar/concluido`);
+      await onRetrieveInvestment(payload);
+      return router.push(
+        `/titulos/investimentos/${tokenId}/resgatar/concluido`
+      );
     } catch (error) {
       console.error(error);
     }

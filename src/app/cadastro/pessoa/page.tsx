@@ -2,18 +2,77 @@
 import { Input } from "@/components/Form/Input";
 import { Arrow } from "@/components/Icons/Arrow";
 import { Title } from "@/components/Title";
+import { useSmartContext } from "@/contexts/SmartContext";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export default function Pessoa() {
+  const { control, handleSubmit } = useForm();
+  const { push } = useRouter();
+  const { login } = useSmartContext();
+
+  async function onSubmit(values: any) {
+    console.log(values);
+    try {
+      toast.loading("Cadastrando...", { duration: 2000 });
+      const address = await login();
+      console.log(address)
+      await axios.post("/apis/kyc", { address });
+      return push("/cadastro/concluido");
+    } catch (error) {
+      toast.error("Erro ao cadastrar!");
+      console.error(error);
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col bg-cadastro_pessoa bg-cover bg-no-repeat bg-center items-end justify-center pr-[160px] bg-white">
-      <div className="w-[850px] flex flex-col gap-4 items-start justify-center">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-[850px] flex flex-col gap-4 items-start justify-center"
+      >
         <Title children={"Preencha seus dados"} />
         <div>
           <Title children={"Nome e identificação"} fontSize={24} />
           <div className="grid grid-cols-2 gap-4">
-            <Input placeholder="Nome" />
-            <Input placeholder="Sobrenome" />
-            <Input placeholder="CPF" />
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Nome"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="sobrenome"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Sobrenome"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="cpf"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="CPF"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
           </div>
         </div>
         <div className="w-full">
@@ -22,30 +81,115 @@ export default function Pessoa() {
             fontSize={24}
           />
           <div className="flex items-center gap-4 w-full">
-            <Input placeholder="DD/MM/AAAA" className="w-3/5" type="date" />
-            <Input placeholder="E-mail" className="w-full" type="email" />
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="DD/MM/AAAA"
+                  className="w-3/5"
+                  type="date"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="E-mail"
+                  className="w-full"
+                  type="email"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
           </div>
         </div>
         <div className="w-full space-y-4">
           <Title children={"Endereço"} fontSize={24} />
           <div className="flex items-center gap-4 w-full">
-            <Input placeholder="Logradouro" className="w-full" />
-            <Input placeholder="Nº" className="w-[15%]" type="number" />
+            <Controller
+              control={control}
+              name="logradouro"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Logradouro"
+                  className="w-full"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="numberHouse"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Nº"
+                  className="w-[15%]"
+                  type="number"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
           </div>
           <div className="flex items-center gap-4 w-full">
-            <Input placeholder="Complemento" className="w-full" />
-            <Input placeholder="Bairro" className="w-full" />
-            <Input placeholder="CEP" className="w-3/4" type="number" />
+            <Controller
+              control={control}
+              name="complement"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Complemento"
+                  className="w-full"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="zone"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Bairro"
+                  className="w-full"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="cep"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="CEP"
+                  className="w-3/4"
+                  type="number"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
           </div>
         </div>
-        <a
-          href="/cadastro/concluido"
-          className="self-end flex items-center gap-2"
-        >
+        <button type="submit" className="self-end flex items-center gap-2">
           <Title children={"PROSSEGUIR"} fontColor="#0000007e" fontSize={32} />
           <Arrow />
-        </a>
-      </div>
+        </button>
+      </form>
     </main>
   );
 }

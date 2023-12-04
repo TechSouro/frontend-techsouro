@@ -1,6 +1,6 @@
 import { Title } from "@/components/Title";
 
-export default function TituloId() {
+export default function TituloId({ params }: any) {
   return (
     <div className="flex min-h-screen bg-[url('/bgs/titulo_bg.png')] bg-cover bg-no-repeat bg-center gap-32 p-40 relative">
       <div className="flex-col flex gap-8">
@@ -40,7 +40,7 @@ export default function TituloId() {
         </p>
       </div>
       <a
-        href={`/titulos/${1}/compra`}
+        href={`/titulos/${params.id}/compra`}
         className="text-3xl font-bold text-[rgba(17,17,17,.50)] absolute bottom-40 right-40 cursor-pointer"
       >
         PROSSEGUIR

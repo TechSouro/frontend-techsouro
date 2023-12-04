@@ -22,11 +22,11 @@ import {
 } from "@biconomy/modules";
 
 type SmartContextType = {
-  login: () => Promise<void>;
+  login: () => Promise<any>;
   signer: ethers.Signer | null;
   smartAccount: BiconomySmartAccountV2;
   address: string;
-  provider: ethers.providers.Web3Provider | null;
+  provider: ethers.BrowserProvider | null;
   user: ParticleAuthModule.UserInfo;
 };
 
@@ -50,11 +50,10 @@ export const SmartContextProvider: React.FC<PropsWithChildren> = ({
   const [bundler, setBundler] = useState<IBundler | null>(null);
   const [paymaster, setPaymaster] = useState<IPaymaster | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
-  const [provider, setProvider] =
-    useState<ethers.providers.Web3Provider | null>(null);
   const address = StorageHelper.getItem("address");
   const user = StorageHelper.getItem("user");
   const smartAccount = StorageHelper.getItem("smartAccount");
+  const provider = StorageHelper.getItem("provider");
 
   useEffect(() => {
     async function setupSmartAccount() {
@@ -91,11 +90,11 @@ export const SmartContextProvider: React.FC<PropsWithChildren> = ({
       const userInfo = await particle.auth.login();
       console.log("Logged in user:", userInfo);
       const particleProvider = new ParticleProvider(particle.auth);
-      const web3Provider = new ethers.providers.Web3Provider(particleProvider);
-      setProvider(web3Provider);
-      setSigner(web3Provider.getSigner());
+      const web3Provider = new ethers.BrowserProvider(particleProvider);
+      const signer = await web3Provider.getSigner();
+      setSigner(signer);
       const module = await ECDSAOwnershipValidationModule.create({
-        signer: web3Provider.getSigner(),
+        signer: signer as any,
         moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
       });
       let biconomySmartAccount = await BiconomySmartAccountV2.create({
@@ -110,6 +109,8 @@ export const SmartContextProvider: React.FC<PropsWithChildren> = ({
       StorageHelper.setItem("smartAccount", biconomySmartAccount);
       StorageHelper.setItem("user", userInfo);
       StorageHelper.setItem("address", address);
+      StorageHelper.setItem("provider", web3Provider);
+      return address
     } catch (error) {
       console.error(error);
     }

@@ -10,11 +10,13 @@ export default function Vender({ params }: any) {
   const { onSellMyUnits } = useOpenMarket();
 
   async function onSell(values: any) {
-    const id = params.id;
-    console.log(id);
+    const tokenId = params.id;
+    const { amount, unitValue } = values;
+    console.log(tokenId);
     try {
-      await onSellMyUnits(id, values.amount, values.unitValue);
-      return router.push(`/titulos/investimentos/${id}/vender/concluido`);
+      const payload = { tokenId, amount, unitValue };
+      await onSellMyUnits(payload);
+      return router.push(`/titulos/investimentos/${tokenId}/vender/concluido`);
     } catch (error) {
       console.error(error);
     }

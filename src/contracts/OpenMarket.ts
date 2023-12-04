@@ -3,60 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
+  TypedContractMethod,
 } from "./common";
 
-export interface OpenMarketInterface extends utils.Interface {
-  functions: {
-    "KYC(address)": FunctionFragment;
-    "balanceOf(address,uint256)": FunctionFragment;
-    "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "buySecondary(address,uint256,uint256)": FunctionFragment;
-    "buyer(address)": FunctionFragment;
-    "getOpenBuy(uint256)": FunctionFragment;
-    "getSecondaryMarket(uint256,address)": FunctionFragment;
-    "isApprovedForAll(address,address)": FunctionFragment;
-    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
-    "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
-    "openBuy(uint256)": FunctionFragment;
-    "owner()": FunctionFragment;
-    "purchasePrimary(uint256,uint256)": FunctionFragment;
-    "renounceOwnership()": FunctionFragment;
-    "retrieveInvestment(uint256,uint256)": FunctionFragment;
-    "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
-    "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "secondaryMarket(uint256,address)": FunctionFragment;
-    "sellMyUnits(uint256,uint256,uint256)": FunctionFragment;
-    "setApprovalForAll(address,bool)": FunctionFragment;
-    "setTreasury(address)": FunctionFragment;
-    "supportsInterface(bytes4)": FunctionFragment;
-    "transferOwnership(address)": FunctionFragment;
-    "uri(uint256)": FunctionFragment;
-  };
-
+export interface OpenMarketInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "KYC"
       | "balanceOf"
       | "balanceOfBatch"
@@ -84,43 +53,63 @@ export interface OpenMarketInterface extends utils.Interface {
       | "uri"
   ): FunctionFragment;
 
-  encodeFunctionData(functionFragment: "KYC", values: [string]): string;
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "ApprovalForAll"
+      | "OwnershipTransferred"
+      | "TransferBatch"
+      | "TransferSingle"
+      | "URI"
+      | "primarySale"
+      | "publicOrderCreated"
+      | "retrievalsucceed"
+      | "secondaryForSale"
+      | "secondarySold"
+  ): EventFragment;
+
+  encodeFunctionData(functionFragment: "KYC", values: [AddressLike]): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
-    values: [string, BigNumberish]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceOfBatch",
-    values: [string[], BigNumberish[]]
+    values: [AddressLike[], BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "buySecondary",
-    values: [string, BigNumberish, BigNumberish]
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "buyer", values: [string]): string;
+  encodeFunctionData(functionFragment: "buyer", values: [AddressLike]): string;
   encodeFunctionData(
     functionFragment: "getOpenBuy",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getSecondaryMarket",
-    values: [BigNumberish, string]
+    values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
-    values: [string, string]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "onERC1155BatchReceived",
-    values: [string, string, BigNumberish[], BigNumberish[], BytesLike]
+    values: [
+      AddressLike,
+      AddressLike,
+      BigNumberish[],
+      BigNumberish[],
+      BytesLike
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "onERC1155Received",
-    values: [string, string, BigNumberish, BigNumberish, BytesLike]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "onERC721Received",
-    values: [string, string, BigNumberish, BytesLike]
+    values: [AddressLike, AddressLike, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "openBuy",
@@ -141,15 +130,21 @@ export interface OpenMarketInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "safeBatchTransferFrom",
-    values: [string, string, BigNumberish[], BigNumberish[], BytesLike]
+    values: [
+      AddressLike,
+      AddressLike,
+      BigNumberish[],
+      BigNumberish[],
+      BytesLike
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "safeTransferFrom",
-    values: [string, string, BigNumberish, BigNumberish, BytesLike]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "secondaryMarket",
-    values: [BigNumberish, string]
+    values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "sellMyUnits",
@@ -157,16 +152,19 @@ export interface OpenMarketInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
-    values: [string, boolean]
+    values: [AddressLike, boolean]
   ): string;
-  encodeFunctionData(functionFragment: "setTreasury", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "setTreasury",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
-    values: [string]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "uri", values: [BigNumberish]): string;
 
@@ -249,1041 +247,778 @@ export interface OpenMarketInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "uri", data: BytesLike): Result;
-
-  events: {
-    "ApprovalForAll(address,address,bool)": EventFragment;
-    "OwnershipTransferred(address,address)": EventFragment;
-    "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
-    "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
-    "URI(string,uint256)": EventFragment;
-    "primarySale(address,uint256,uint256)": EventFragment;
-    "publicOrderCreated(uint256,uint256,uint256)": EventFragment;
-    "retrievalsucceed(address,uint256,uint256)": EventFragment;
-    "secondaryForSale(address,uint256,uint256,uint256)": EventFragment;
-    "secondarySold(address,address,uint256,uint256,uint256)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "primarySale"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "publicOrderCreated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "retrievalsucceed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "secondaryForSale"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "secondarySold"): EventFragment;
 }
 
-export interface ApprovalForAllEventObject {
-  account: string;
-  operator: string;
-  approved: boolean;
+export namespace ApprovalForAllEvent {
+  export type InputTuple = [
+    account: AddressLike,
+    operator: AddressLike,
+    approved: boolean
+  ];
+  export type OutputTuple = [
+    account: string,
+    operator: string,
+    approved: boolean
+  ];
+  export interface OutputObject {
+    account: string;
+    operator: string;
+    approved: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type ApprovalForAllEvent = TypedEvent<
-  [string, string, boolean],
-  ApprovalForAllEventObject
->;
 
-export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
-
-export interface OwnershipTransferredEventObject {
-  previousOwner: string;
-  newOwner: string;
+export namespace OwnershipTransferredEvent {
+  export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [previousOwner: string, newOwner: string];
+  export interface OutputObject {
+    previousOwner: string;
+    newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type OwnershipTransferredEvent = TypedEvent<
-  [string, string],
-  OwnershipTransferredEventObject
->;
 
-export type OwnershipTransferredEventFilter =
-  TypedEventFilter<OwnershipTransferredEvent>;
-
-export interface TransferBatchEventObject {
-  operator: string;
-  from: string;
-  to: string;
-  ids: BigNumber[];
-  values: BigNumber[];
+export namespace TransferBatchEvent {
+  export type InputTuple = [
+    operator: AddressLike,
+    from: AddressLike,
+    to: AddressLike,
+    ids: BigNumberish[],
+    values: BigNumberish[]
+  ];
+  export type OutputTuple = [
+    operator: string,
+    from: string,
+    to: string,
+    ids: bigint[],
+    values: bigint[]
+  ];
+  export interface OutputObject {
+    operator: string;
+    from: string;
+    to: string;
+    ids: bigint[];
+    values: bigint[];
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferBatchEvent = TypedEvent<
-  [string, string, string, BigNumber[], BigNumber[]],
-  TransferBatchEventObject
->;
 
-export type TransferBatchEventFilter = TypedEventFilter<TransferBatchEvent>;
-
-export interface TransferSingleEventObject {
-  operator: string;
-  from: string;
-  to: string;
-  id: BigNumber;
-  value: BigNumber;
+export namespace TransferSingleEvent {
+  export type InputTuple = [
+    operator: AddressLike,
+    from: AddressLike,
+    to: AddressLike,
+    id: BigNumberish,
+    value: BigNumberish
+  ];
+  export type OutputTuple = [
+    operator: string,
+    from: string,
+    to: string,
+    id: bigint,
+    value: bigint
+  ];
+  export interface OutputObject {
+    operator: string;
+    from: string;
+    to: string;
+    id: bigint;
+    value: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferSingleEvent = TypedEvent<
-  [string, string, string, BigNumber, BigNumber],
-  TransferSingleEventObject
->;
 
-export type TransferSingleEventFilter = TypedEventFilter<TransferSingleEvent>;
-
-export interface URIEventObject {
-  value: string;
-  id: BigNumber;
+export namespace URIEvent {
+  export type InputTuple = [value: string, id: BigNumberish];
+  export type OutputTuple = [value: string, id: bigint];
+  export interface OutputObject {
+    value: string;
+    id: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type URIEvent = TypedEvent<[string, BigNumber], URIEventObject>;
 
-export type URIEventFilter = TypedEventFilter<URIEvent>;
-
-export interface primarySaleEventObject {
-  _sender: string;
-  _tokenId: BigNumber;
-  _amount: BigNumber;
+export namespace primarySaleEvent {
+  export type InputTuple = [
+    _sender: AddressLike,
+    _tokenId: BigNumberish,
+    _amount: BigNumberish
+  ];
+  export type OutputTuple = [
+    _sender: string,
+    _tokenId: bigint,
+    _amount: bigint
+  ];
+  export interface OutputObject {
+    _sender: string;
+    _tokenId: bigint;
+    _amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type primarySaleEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  primarySaleEventObject
->;
 
-export type primarySaleEventFilter = TypedEventFilter<primarySaleEvent>;
-
-export interface publicOrderCreatedEventObject {
-  _tokenId: BigNumber;
-  _units: BigNumber;
-  _price: BigNumber;
+export namespace publicOrderCreatedEvent {
+  export type InputTuple = [
+    _tokenId: BigNumberish,
+    _units: BigNumberish,
+    _price: BigNumberish
+  ];
+  export type OutputTuple = [_tokenId: bigint, _units: bigint, _price: bigint];
+  export interface OutputObject {
+    _tokenId: bigint;
+    _units: bigint;
+    _price: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type publicOrderCreatedEvent = TypedEvent<
-  [BigNumber, BigNumber, BigNumber],
-  publicOrderCreatedEventObject
->;
 
-export type publicOrderCreatedEventFilter =
-  TypedEventFilter<publicOrderCreatedEvent>;
-
-export interface retrievalsucceedEventObject {
-  _sender: string;
-  _tokenId: BigNumber;
-  _amount: BigNumber;
+export namespace retrievalsucceedEvent {
+  export type InputTuple = [
+    _sender: AddressLike,
+    _tokenId: BigNumberish,
+    _amount: BigNumberish
+  ];
+  export type OutputTuple = [
+    _sender: string,
+    _tokenId: bigint,
+    _amount: bigint
+  ];
+  export interface OutputObject {
+    _sender: string;
+    _tokenId: bigint;
+    _amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type retrievalsucceedEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  retrievalsucceedEventObject
->;
 
-export type retrievalsucceedEventFilter =
-  TypedEventFilter<retrievalsucceedEvent>;
-
-export interface secondaryForSaleEventObject {
-  _seller: string;
-  _tokenId: BigNumber;
-  _units: BigNumber;
-  _price: BigNumber;
+export namespace secondaryForSaleEvent {
+  export type InputTuple = [
+    _seller: AddressLike,
+    _tokenId: BigNumberish,
+    _units: BigNumberish,
+    _price: BigNumberish
+  ];
+  export type OutputTuple = [
+    _seller: string,
+    _tokenId: bigint,
+    _units: bigint,
+    _price: bigint
+  ];
+  export interface OutputObject {
+    _seller: string;
+    _tokenId: bigint;
+    _units: bigint;
+    _price: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type secondaryForSaleEvent = TypedEvent<
-  [string, BigNumber, BigNumber, BigNumber],
-  secondaryForSaleEventObject
->;
 
-export type secondaryForSaleEventFilter =
-  TypedEventFilter<secondaryForSaleEvent>;
-
-export interface secondarySoldEventObject {
-  _seller: string;
-  _buyer: string;
-  _units: BigNumber;
-  _price: BigNumber;
-  _tokenId: BigNumber;
+export namespace secondarySoldEvent {
+  export type InputTuple = [
+    _seller: AddressLike,
+    _buyer: AddressLike,
+    _units: BigNumberish,
+    _price: BigNumberish,
+    _tokenId: BigNumberish
+  ];
+  export type OutputTuple = [
+    _seller: string,
+    _buyer: string,
+    _units: bigint,
+    _price: bigint,
+    _tokenId: bigint
+  ];
+  export interface OutputObject {
+    _seller: string;
+    _buyer: string;
+    _units: bigint;
+    _price: bigint;
+    _tokenId: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type secondarySoldEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber, BigNumber],
-  secondarySoldEventObject
->;
-
-export type secondarySoldEventFilter = TypedEventFilter<secondarySoldEvent>;
 
 export interface OpenMarket extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): OpenMarket;
+  waitForDeployment(): Promise<this>;
 
   interface: OpenMarketInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    KYC(
-      _KYCed: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    balanceOf(
-      account: string,
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    balanceOfBatch(
-      accounts: string[],
-      ids: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<[BigNumber[]]>;
+  KYC: TypedContractMethod<[_KYCed: AddressLike], [void], "nonpayable">;
 
-    buySecondary(
-      _seller: string,
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  balanceOf: TypedContractMethod<
+    [account: AddressLike, id: BigNumberish],
+    [bigint],
+    "view"
+  >;
 
-    buyer(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
+  balanceOfBatch: TypedContractMethod<
+    [accounts: AddressLike[], ids: BigNumberish[]],
+    [bigint[]],
+    "view"
+  >;
 
-    getOpenBuy(
-      _tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+  buySecondary: TypedContractMethod<
+    [_seller: AddressLike, _tokenId: BigNumberish, _units: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    getSecondaryMarket(
-      _tokenId: BigNumberish,
-      _seller: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
+  buyer: TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
 
-    isApprovedForAll(
-      account: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
+  getOpenBuy: TypedContractMethod<
+    [_tokenId: BigNumberish],
+    [[bigint, bigint]],
+    "view"
+  >;
 
-    onERC1155BatchReceived(
-      arg0: string,
-      arg1: string,
+  getSecondaryMarket: TypedContractMethod<
+    [_tokenId: BigNumberish, _seller: AddressLike],
+    [[bigint, bigint]],
+    "view"
+  >;
+
+  isApprovedForAll: TypedContractMethod<
+    [account: AddressLike, operator: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  onERC1155BatchReceived: TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: AddressLike,
       arg2: BigNumberish[],
       arg3: BigNumberish[],
-      arg4: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      arg4: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
 
-    onERC1155Received(
-      arg0: string,
-      arg1: string,
+  onERC1155Received: TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: AddressLike,
       arg2: BigNumberish,
       arg3: BigNumberish,
-      arg4: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      arg4: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
 
-    onERC721Received(
-      operator: string,
-      from: string,
+  onERC721Received: TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
       tokenId: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
 
-    openBuy(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { _price: BigNumber; _avlb: BigNumber }
-    >;
+  openBuy: TypedContractMethod<
+    [arg0: BigNumberish],
+    [[bigint, bigint] & { _price: bigint; _avlb: bigint }],
+    "view"
+  >;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
+  owner: TypedContractMethod<[], [string], "view">;
 
-    purchasePrimary(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  purchasePrimary: TypedContractMethod<
+    [_tokenId: BigNumberish, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    renounceOwnership(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-    retrieveInvestment(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  retrieveInvestment: TypedContractMethod<
+    [_tokenId: BigNumberish, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    safeBatchTransferFrom(
-      from: string,
-      to: string,
+  safeBatchTransferFrom: TypedContractMethod<
+    [
+      from: AddressLike,
+      to: AddressLike,
       ids: BigNumberish[],
       values: BigNumberish[],
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-    safeTransferFrom(
-      from: string,
-      to: string,
+  safeTransferFrom: TypedContractMethod<
+    [
+      from: AddressLike,
+      to: AddressLike,
       id: BigNumberish,
       value: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-    secondaryMarket(
-      arg0: BigNumberish,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { _price: BigNumber; _avlb: BigNumber }
-    >;
+  secondaryMarket: TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
+    [[bigint, bigint] & { _price: bigint; _avlb: bigint }],
+    "view"
+  >;
 
-    sellMyUnits(
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      _price: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  sellMyUnits: TypedContractMethod<
+    [_tokenId: BigNumberish, _units: BigNumberish, _price: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  setApprovalForAll: TypedContractMethod<
+    [operator: AddressLike, approved: boolean],
+    [void],
+    "nonpayable"
+  >;
 
-    setTreasury(
-      _addr: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  setTreasury: TypedContractMethod<[_addr: AddressLike], [void], "nonpayable">;
 
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
+  supportsInterface: TypedContractMethod<
+    [interfaceId: BytesLike],
+    [boolean],
+    "view"
+  >;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  transferOwnership: TypedContractMethod<
+    [newOwner: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
-  };
+  uri: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
 
-  KYC(
-    _KYCed: string,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  balanceOf(
-    account: string,
-    id: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  balanceOfBatch(
-    accounts: string[],
-    ids: BigNumberish[],
-    overrides?: CallOverrides
-  ): Promise<BigNumber[]>;
-
-  buySecondary(
-    _seller: string,
-    _tokenId: BigNumberish,
-    _units: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  buyer(arg0: string, overrides?: CallOverrides): Promise<boolean>;
-
-  getOpenBuy(
-    _tokenId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
-
-  getSecondaryMarket(
-    _tokenId: BigNumberish,
-    _seller: string,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
-
-  isApprovedForAll(
-    account: string,
-    operator: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  onERC1155BatchReceived(
-    arg0: string,
-    arg1: string,
-    arg2: BigNumberish[],
-    arg3: BigNumberish[],
-    arg4: BytesLike,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  onERC1155Received(
-    arg0: string,
-    arg1: string,
-    arg2: BigNumberish,
-    arg3: BigNumberish,
-    arg4: BytesLike,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  onERC721Received(
-    operator: string,
-    from: string,
-    tokenId: BigNumberish,
-    data: BytesLike,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  openBuy(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber] & { _price: BigNumber; _avlb: BigNumber }>;
-
-  owner(overrides?: CallOverrides): Promise<string>;
-
-  purchasePrimary(
-    _tokenId: BigNumberish,
-    _amount: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  renounceOwnership(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  retrieveInvestment(
-    _tokenId: BigNumberish,
-    _amount: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  safeBatchTransferFrom(
-    from: string,
-    to: string,
-    ids: BigNumberish[],
-    values: BigNumberish[],
-    data: BytesLike,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  safeTransferFrom(
-    from: string,
-    to: string,
-    id: BigNumberish,
-    value: BigNumberish,
-    data: BytesLike,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  secondaryMarket(
-    arg0: BigNumberish,
-    arg1: string,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber] & { _price: BigNumber; _avlb: BigNumber }>;
-
-  sellMyUnits(
-    _tokenId: BigNumberish,
-    _units: BigNumberish,
-    _price: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  setApprovalForAll(
-    operator: string,
-    approved: boolean,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  setTreasury(
-    _addr: string,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  supportsInterface(
-    interfaceId: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  transferOwnership(
-    newOwner: string,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-  callStatic: {
-    KYC(_KYCed: string, overrides?: CallOverrides): Promise<void>;
-
-    balanceOf(
-      account: string,
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    balanceOfBatch(
-      accounts: string[],
-      ids: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<BigNumber[]>;
-
-    buySecondary(
-      _seller: string,
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    buyer(arg0: string, overrides?: CallOverrides): Promise<boolean>;
-
-    getOpenBuy(
-      _tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
-
-    getSecondaryMarket(
-      _tokenId: BigNumberish,
-      _seller: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
-
-    isApprovedForAll(
-      account: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    onERC1155BatchReceived(
-      arg0: string,
-      arg1: string,
+  getFunction(
+    nameOrSignature: "KYC"
+  ): TypedContractMethod<[_KYCed: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "balanceOf"
+  ): TypedContractMethod<
+    [account: AddressLike, id: BigNumberish],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "balanceOfBatch"
+  ): TypedContractMethod<
+    [accounts: AddressLike[], ids: BigNumberish[]],
+    [bigint[]],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "buySecondary"
+  ): TypedContractMethod<
+    [_seller: AddressLike, _tokenId: BigNumberish, _units: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "buyer"
+  ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "getOpenBuy"
+  ): TypedContractMethod<[_tokenId: BigNumberish], [[bigint, bigint]], "view">;
+  getFunction(
+    nameOrSignature: "getSecondaryMarket"
+  ): TypedContractMethod<
+    [_tokenId: BigNumberish, _seller: AddressLike],
+    [[bigint, bigint]],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "isApprovedForAll"
+  ): TypedContractMethod<
+    [account: AddressLike, operator: AddressLike],
+    [boolean],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "onERC1155BatchReceived"
+  ): TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: AddressLike,
       arg2: BigNumberish[],
       arg3: BigNumberish[],
-      arg4: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    onERC1155Received(
-      arg0: string,
-      arg1: string,
+      arg4: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "onERC1155Received"
+  ): TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: AddressLike,
       arg2: BigNumberish,
       arg3: BigNumberish,
-      arg4: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    onERC721Received(
-      operator: string,
-      from: string,
+      arg4: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "onERC721Received"
+  ): TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
       tokenId: BigNumberish,
-      data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    openBuy(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { _price: BigNumber; _avlb: BigNumber }
-    >;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    purchasePrimary(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    retrieveInvestment(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    safeBatchTransferFrom(
-      from: string,
-      to: string,
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "openBuy"
+  ): TypedContractMethod<
+    [arg0: BigNumberish],
+    [[bigint, bigint] & { _price: bigint; _avlb: bigint }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "purchasePrimary"
+  ): TypedContractMethod<
+    [_tokenId: BigNumberish, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "renounceOwnership"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "retrieveInvestment"
+  ): TypedContractMethod<
+    [_tokenId: BigNumberish, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "safeBatchTransferFrom"
+  ): TypedContractMethod<
+    [
+      from: AddressLike,
+      to: AddressLike,
       ids: BigNumberish[],
       values: BigNumberish[],
-      data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    safeTransferFrom(
-      from: string,
-      to: string,
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "safeTransferFrom"
+  ): TypedContractMethod<
+    [
+      from: AddressLike,
+      to: AddressLike,
       id: BigNumberish,
       value: BigNumberish,
-      data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "secondaryMarket"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
+    [[bigint, bigint] & { _price: bigint; _avlb: bigint }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "sellMyUnits"
+  ): TypedContractMethod<
+    [_tokenId: BigNumberish, _units: BigNumberish, _price: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setApprovalForAll"
+  ): TypedContractMethod<
+    [operator: AddressLike, approved: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setTreasury"
+  ): TypedContractMethod<[_addr: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "supportsInterface"
+  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "transferOwnership"
+  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "uri"
+  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
 
-    secondaryMarket(
-      arg0: BigNumberish,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { _price: BigNumber; _avlb: BigNumber }
-    >;
-
-    sellMyUnits(
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      _price: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setTreasury(_addr: string, overrides?: CallOverrides): Promise<void>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
-  };
+  getEvent(
+    key: "ApprovalForAll"
+  ): TypedContractEvent<
+    ApprovalForAllEvent.InputTuple,
+    ApprovalForAllEvent.OutputTuple,
+    ApprovalForAllEvent.OutputObject
+  >;
+  getEvent(
+    key: "OwnershipTransferred"
+  ): TypedContractEvent<
+    OwnershipTransferredEvent.InputTuple,
+    OwnershipTransferredEvent.OutputTuple,
+    OwnershipTransferredEvent.OutputObject
+  >;
+  getEvent(
+    key: "TransferBatch"
+  ): TypedContractEvent<
+    TransferBatchEvent.InputTuple,
+    TransferBatchEvent.OutputTuple,
+    TransferBatchEvent.OutputObject
+  >;
+  getEvent(
+    key: "TransferSingle"
+  ): TypedContractEvent<
+    TransferSingleEvent.InputTuple,
+    TransferSingleEvent.OutputTuple,
+    TransferSingleEvent.OutputObject
+  >;
+  getEvent(
+    key: "URI"
+  ): TypedContractEvent<
+    URIEvent.InputTuple,
+    URIEvent.OutputTuple,
+    URIEvent.OutputObject
+  >;
+  getEvent(
+    key: "primarySale"
+  ): TypedContractEvent<
+    primarySaleEvent.InputTuple,
+    primarySaleEvent.OutputTuple,
+    primarySaleEvent.OutputObject
+  >;
+  getEvent(
+    key: "publicOrderCreated"
+  ): TypedContractEvent<
+    publicOrderCreatedEvent.InputTuple,
+    publicOrderCreatedEvent.OutputTuple,
+    publicOrderCreatedEvent.OutputObject
+  >;
+  getEvent(
+    key: "retrievalsucceed"
+  ): TypedContractEvent<
+    retrievalsucceedEvent.InputTuple,
+    retrievalsucceedEvent.OutputTuple,
+    retrievalsucceedEvent.OutputObject
+  >;
+  getEvent(
+    key: "secondaryForSale"
+  ): TypedContractEvent<
+    secondaryForSaleEvent.InputTuple,
+    secondaryForSaleEvent.OutputTuple,
+    secondaryForSaleEvent.OutputObject
+  >;
+  getEvent(
+    key: "secondarySold"
+  ): TypedContractEvent<
+    secondarySoldEvent.InputTuple,
+    secondarySoldEvent.OutputTuple,
+    secondarySoldEvent.OutputObject
+  >;
 
   filters: {
-    "ApprovalForAll(address,address,bool)"(
-      account?: string | null,
-      operator?: string | null,
-      approved?: null
-    ): ApprovalForAllEventFilter;
-    ApprovalForAll(
-      account?: string | null,
-      operator?: string | null,
-      approved?: null
-    ): ApprovalForAllEventFilter;
+    "ApprovalForAll(address,address,bool)": TypedContractEvent<
+      ApprovalForAllEvent.InputTuple,
+      ApprovalForAllEvent.OutputTuple,
+      ApprovalForAllEvent.OutputObject
+    >;
+    ApprovalForAll: TypedContractEvent<
+      ApprovalForAllEvent.InputTuple,
+      ApprovalForAllEvent.OutputTuple,
+      ApprovalForAllEvent.OutputObject
+    >;
 
-    "OwnershipTransferred(address,address)"(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): OwnershipTransferredEventFilter;
-    OwnershipTransferred(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): OwnershipTransferredEventFilter;
+    "OwnershipTransferred(address,address)": TypedContractEvent<
+      OwnershipTransferredEvent.InputTuple,
+      OwnershipTransferredEvent.OutputTuple,
+      OwnershipTransferredEvent.OutputObject
+    >;
+    OwnershipTransferred: TypedContractEvent<
+      OwnershipTransferredEvent.InputTuple,
+      OwnershipTransferredEvent.OutputTuple,
+      OwnershipTransferredEvent.OutputObject
+    >;
 
-    "TransferBatch(address,address,address,uint256[],uint256[])"(
-      operator?: string | null,
-      from?: string | null,
-      to?: string | null,
-      ids?: null,
-      values?: null
-    ): TransferBatchEventFilter;
-    TransferBatch(
-      operator?: string | null,
-      from?: string | null,
-      to?: string | null,
-      ids?: null,
-      values?: null
-    ): TransferBatchEventFilter;
+    "TransferBatch(address,address,address,uint256[],uint256[])": TypedContractEvent<
+      TransferBatchEvent.InputTuple,
+      TransferBatchEvent.OutputTuple,
+      TransferBatchEvent.OutputObject
+    >;
+    TransferBatch: TypedContractEvent<
+      TransferBatchEvent.InputTuple,
+      TransferBatchEvent.OutputTuple,
+      TransferBatchEvent.OutputObject
+    >;
 
-    "TransferSingle(address,address,address,uint256,uint256)"(
-      operator?: string | null,
-      from?: string | null,
-      to?: string | null,
-      id?: null,
-      value?: null
-    ): TransferSingleEventFilter;
-    TransferSingle(
-      operator?: string | null,
-      from?: string | null,
-      to?: string | null,
-      id?: null,
-      value?: null
-    ): TransferSingleEventFilter;
+    "TransferSingle(address,address,address,uint256,uint256)": TypedContractEvent<
+      TransferSingleEvent.InputTuple,
+      TransferSingleEvent.OutputTuple,
+      TransferSingleEvent.OutputObject
+    >;
+    TransferSingle: TypedContractEvent<
+      TransferSingleEvent.InputTuple,
+      TransferSingleEvent.OutputTuple,
+      TransferSingleEvent.OutputObject
+    >;
 
-    "URI(string,uint256)"(
-      value?: null,
-      id?: BigNumberish | null
-    ): URIEventFilter;
-    URI(value?: null, id?: BigNumberish | null): URIEventFilter;
+    "URI(string,uint256)": TypedContractEvent<
+      URIEvent.InputTuple,
+      URIEvent.OutputTuple,
+      URIEvent.OutputObject
+    >;
+    URI: TypedContractEvent<
+      URIEvent.InputTuple,
+      URIEvent.OutputTuple,
+      URIEvent.OutputObject
+    >;
 
-    "primarySale(address,uint256,uint256)"(
-      _sender?: string | null,
-      _tokenId?: BigNumberish | null,
-      _amount?: BigNumberish | null
-    ): primarySaleEventFilter;
-    primarySale(
-      _sender?: string | null,
-      _tokenId?: BigNumberish | null,
-      _amount?: BigNumberish | null
-    ): primarySaleEventFilter;
+    "primarySale(address,uint256,uint256)": TypedContractEvent<
+      primarySaleEvent.InputTuple,
+      primarySaleEvent.OutputTuple,
+      primarySaleEvent.OutputObject
+    >;
+    primarySale: TypedContractEvent<
+      primarySaleEvent.InputTuple,
+      primarySaleEvent.OutputTuple,
+      primarySaleEvent.OutputObject
+    >;
 
-    "publicOrderCreated(uint256,uint256,uint256)"(
-      _tokenId?: BigNumberish | null,
-      _units?: BigNumberish | null,
-      _price?: null
-    ): publicOrderCreatedEventFilter;
-    publicOrderCreated(
-      _tokenId?: BigNumberish | null,
-      _units?: BigNumberish | null,
-      _price?: null
-    ): publicOrderCreatedEventFilter;
+    "publicOrderCreated(uint256,uint256,uint256)": TypedContractEvent<
+      publicOrderCreatedEvent.InputTuple,
+      publicOrderCreatedEvent.OutputTuple,
+      publicOrderCreatedEvent.OutputObject
+    >;
+    publicOrderCreated: TypedContractEvent<
+      publicOrderCreatedEvent.InputTuple,
+      publicOrderCreatedEvent.OutputTuple,
+      publicOrderCreatedEvent.OutputObject
+    >;
 
-    "retrievalsucceed(address,uint256,uint256)"(
-      _sender?: null,
-      _tokenId?: null,
-      _amount?: null
-    ): retrievalsucceedEventFilter;
-    retrievalsucceed(
-      _sender?: null,
-      _tokenId?: null,
-      _amount?: null
-    ): retrievalsucceedEventFilter;
+    "retrievalsucceed(address,uint256,uint256)": TypedContractEvent<
+      retrievalsucceedEvent.InputTuple,
+      retrievalsucceedEvent.OutputTuple,
+      retrievalsucceedEvent.OutputObject
+    >;
+    retrievalsucceed: TypedContractEvent<
+      retrievalsucceedEvent.InputTuple,
+      retrievalsucceedEvent.OutputTuple,
+      retrievalsucceedEvent.OutputObject
+    >;
 
-    "secondaryForSale(address,uint256,uint256,uint256)"(
-      _seller?: string | null,
-      _tokenId?: BigNumberish | null,
-      _units?: BigNumberish | null,
-      _price?: null
-    ): secondaryForSaleEventFilter;
-    secondaryForSale(
-      _seller?: string | null,
-      _tokenId?: BigNumberish | null,
-      _units?: BigNumberish | null,
-      _price?: null
-    ): secondaryForSaleEventFilter;
+    "secondaryForSale(address,uint256,uint256,uint256)": TypedContractEvent<
+      secondaryForSaleEvent.InputTuple,
+      secondaryForSaleEvent.OutputTuple,
+      secondaryForSaleEvent.OutputObject
+    >;
+    secondaryForSale: TypedContractEvent<
+      secondaryForSaleEvent.InputTuple,
+      secondaryForSaleEvent.OutputTuple,
+      secondaryForSaleEvent.OutputObject
+    >;
 
-    "secondarySold(address,address,uint256,uint256,uint256)"(
-      _seller?: string | null,
-      _buyer?: string | null,
-      _units?: BigNumberish | null,
-      _price?: null,
-      _tokenId?: null
-    ): secondarySoldEventFilter;
-    secondarySold(
-      _seller?: string | null,
-      _buyer?: string | null,
-      _units?: BigNumberish | null,
-      _price?: null,
-      _tokenId?: null
-    ): secondarySoldEventFilter;
-  };
-
-  estimateGas: {
-    KYC(
-      _KYCed: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    balanceOf(
-      account: string,
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    balanceOfBatch(
-      accounts: string[],
-      ids: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    buySecondary(
-      _seller: string,
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    buyer(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    getOpenBuy(
-      _tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getSecondaryMarket(
-      _tokenId: BigNumberish,
-      _seller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    isApprovedForAll(
-      account: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    onERC1155BatchReceived(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish[],
-      arg3: BigNumberish[],
-      arg4: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    onERC1155Received(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      arg3: BigNumberish,
-      arg4: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    onERC721Received(
-      operator: string,
-      from: string,
-      tokenId: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    openBuy(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    purchasePrimary(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    renounceOwnership(
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    retrieveInvestment(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    safeBatchTransferFrom(
-      from: string,
-      to: string,
-      ids: BigNumberish[],
-      values: BigNumberish[],
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    safeTransferFrom(
-      from: string,
-      to: string,
-      id: BigNumberish,
-      value: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    secondaryMarket(
-      arg0: BigNumberish,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    sellMyUnits(
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      _price: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    setTreasury(
-      _addr: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    KYC(
-      _KYCed: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    balanceOf(
-      account: string,
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    balanceOfBatch(
-      accounts: string[],
-      ids: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    buySecondary(
-      _seller: string,
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    buyer(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getOpenBuy(
-      _tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getSecondaryMarket(
-      _tokenId: BigNumberish,
-      _seller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    isApprovedForAll(
-      account: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    onERC1155BatchReceived(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish[],
-      arg3: BigNumberish[],
-      arg4: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    onERC1155Received(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      arg3: BigNumberish,
-      arg4: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    onERC721Received(
-      operator: string,
-      from: string,
-      tokenId: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    openBuy(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    purchasePrimary(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    renounceOwnership(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    retrieveInvestment(
-      _tokenId: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    safeBatchTransferFrom(
-      from: string,
-      to: string,
-      ids: BigNumberish[],
-      values: BigNumberish[],
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    safeTransferFrom(
-      from: string,
-      to: string,
-      id: BigNumberish,
-      value: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    secondaryMarket(
-      arg0: BigNumberish,
-      arg1: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    sellMyUnits(
-      _tokenId: BigNumberish,
-      _units: BigNumberish,
-      _price: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    setTreasury(
-      _addr: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    uri(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    "secondarySold(address,address,uint256,uint256,uint256)": TypedContractEvent<
+      secondarySoldEvent.InputTuple,
+      secondarySoldEvent.OutputTuple,
+      secondarySoldEvent.OutputObject
+    >;
+    secondarySold: TypedContractEvent<
+      secondarySoldEvent.InputTuple,
+      secondarySoldEvent.OutputTuple,
+      secondarySoldEvent.OutputObject
+    >;
   };
 }

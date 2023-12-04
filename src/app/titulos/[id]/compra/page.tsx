@@ -5,20 +5,21 @@ import { Title } from "@/components/Title";
 import { useOpenMarket } from "@/hooks/useOpenMarket";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Compra({ params }: any) {
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const router = useRouter();
   const { onPurchasePrimary } = useOpenMarket();
 
   async function onBuy() {
-    const id = params.id;
-    console.log(amount);
-    console.log(id);
+    const tokenId = params.id;
     try {
-      await onPurchasePrimary(id, Number(amount));
-      return router.push(`/titulos/${id}/concluido`);
+      const payload = { tokenId, amount };
+      await onPurchasePrimary(payload);
+      return router.push(`/titulos/${tokenId}/concluido`);
     } catch (error) {
+      toast.error("Erro ao comprar o titulo!");
       console.error(error);
     }
   }
@@ -32,7 +33,7 @@ export default function Compra({ params }: any) {
         />
         <Input
           placeholder="00"
-          onChange={({ target }) => setAmount(target.value)}
+          onChange={({ target }) => setAmount(Number(target.value))}
           value={amount}
         />
         <Button onClick={onBuy} children={"Confirmar compra"} color="green" />

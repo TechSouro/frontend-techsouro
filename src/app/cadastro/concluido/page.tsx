@@ -15,7 +15,9 @@ export default function Concluido() {
           Agora você faz parte de uma comunidade dedicada à inovação financeira.
           Descubra as oportunidades de investimento que preparamos para você.
         </p>
-        <Button children={"Acesse a plataforma"} color="green" />
+        <a href="/dashboard" className="w-full">
+          <Button children={"Acesse a plataforma"} color="green" />
+        </a>
       </div>
     </main>
   );

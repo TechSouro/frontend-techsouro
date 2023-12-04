@@ -14,11 +14,13 @@ export default function Transferir({ params }: any) {
   const newAddress = AddressUtils.hideAddress(address);
 
   async function onSell(values: any) {
-    const id = params.id;
-    console.log(id);
+    const tokenId = params.id;
     try {
-      await onSafeTransferFrom(values);
-      return router.push(`/titulos/investimentos/${id}/transferir/concluido`);
+      const newValues = { ...values, tokenId };
+      await onSafeTransferFrom(newValues);
+      return router.push(
+        `/titulos/investimentos/${tokenId}/transferir/concluido`
+      );
     } catch (error) {
       console.error(error);
     }
@@ -36,7 +38,7 @@ export default function Transferir({ params }: any) {
           <h1 children={"Seu endereço: "} className="text-2xl font-bold" />
           <Controller
             control={control}
-            name="address"
+            name="addressFrom"
             render={({ field: { onChange, onBlur } }) => (
               <Input
                 placeholder="0xC3...D2C8"
@@ -54,7 +56,7 @@ export default function Transferir({ params }: any) {
           />
           <Controller
             control={control}
-            name="getAddress"
+            name="addressTo"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 placeholder="Insira o endereço..."

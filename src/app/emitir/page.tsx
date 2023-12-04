@@ -2,6 +2,7 @@
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Form/Input";
 import { Title } from "@/components/Title";
+import { useSmartContext } from "@/contexts/SmartContext";
 import { useSourceMinter } from "@/hooks/useSourceMinter";
 import { useTesouroDireto } from "@/hooks/useTesouroDireto";
 import { useState } from "react";
@@ -10,6 +11,7 @@ import { Controller, useForm } from "react-hook-form";
 export default function Emitir() {
   const { handleSubmit, control } = useForm();
   const [select, setSelect] = useState();
+  const [data, setData] = useState();
   const { onEmitTreasury, onOpenPublicOffer } = useTesouroDireto();
   const { onEmission } = useSourceMinter();
 
@@ -19,10 +21,16 @@ export default function Emitir() {
 
   async function onSubmit(values: any) {
     const newValues = { ...values, titleType: select };
-    console.log(newValues);
-    await onEmission();
-   /*  await onOpenPublicOffer(1); */
-    /* await onEmitTreasury(newValues); */
+    setData(newValues);
+  }
+
+  async function onEmit() {
+    await onOpenPublicOffer(1);
+    await onEmitTreasury(data);
+  }
+
+  async function onEmitDrex() {
+    await onEmission(data);
   }
 
   return (
@@ -122,11 +130,13 @@ export default function Emitir() {
               type="submit"
               children={"Emitir meu Título"}
               color="green"
+              onClick={onEmit}
             />
             <Button
               type="submit"
               children={"Emitir meu Título no DREX"}
               color="black"
+              onClick={onEmitDrex}
             />
           </div>
         </form>

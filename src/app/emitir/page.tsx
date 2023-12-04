@@ -28,7 +28,7 @@ export default function Emitir() {
 
   async function onEmit() {
     try {
-      await onOpenPublicOffer(0);
+      await onOpenPublicOffer(1000);
       await onEmitTreasury(data);
       push("/emitir/concluido");
     } catch (error) {
@@ -38,6 +38,7 @@ export default function Emitir() {
 
   async function onEmitDrex() {
     try {
+      console.log(data)
       await onEmission(data);
       push("/emitir/concluido");
     } catch (error) {

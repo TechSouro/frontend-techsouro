@@ -25,6 +25,7 @@
     "@web3auth/torus-wallet-connector-plugin": "^7.2.0",
     "axios": "^1.6.2",
     "classnames": "^2.3.2",
+    "encoding": "^0.1.13",
     "ethers": "^6.9.0",
     "luxon": "^3.4.4",
     "net": "^1.0.2",

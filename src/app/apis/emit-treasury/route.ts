@@ -1,11 +1,16 @@
-import { GAS_LIMIT, RPC_MUMBAI, tesouroDiretoAddress, walletPrivateKey } from "@/constants";
+import {
+  GAS_LIMIT,
+  RPC_SEPOLIA,
+  tesouroDiretoAddress,
+  walletPrivateKey,
+} from "@/constants";
 import { TesouroDireto__factory } from "@/contracts";
 import { JsonRpcProvider, ethers } from "ethers";
 
 export async function POST(request: Request) {
   const payload = await request.json();
-  const { minValue, yearsDuration, totalAmount, rent, titleType } = payload;
-  const provider = new JsonRpcProvider(RPC_MUMBAI);
+  const { minValue, yearsDuration, totalAmount, rent } = payload;
+  const provider = new JsonRpcProvider(RPC_SEPOLIA);
   const contract_factory = TesouroDireto__factory.connect(
     tesouroDiretoAddress,
     provider
@@ -29,7 +34,7 @@ export async function POST(request: Request) {
     console.log("tx: ", tx);
     return Response.json(tx);
   } catch (error: any) {
-    console.log(error)
+    console.log(error);
     throw new Error(error);
   }
 }

@@ -9,9 +9,10 @@ export function useTesouroDireto() {
     try {
       await axios.post("/apis/emit-treasury", payload);
       setIsLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
       console.error(error);
+      throw new Error(error);
     }
   }
 
@@ -20,9 +21,10 @@ export function useTesouroDireto() {
     try {
       await axios.post("/apis/open-public", { tokenId });
       setIsLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
       console.error(error);
+      throw new Error(error);
     }
   }
 

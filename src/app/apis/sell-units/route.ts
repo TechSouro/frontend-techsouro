@@ -1,19 +1,30 @@
-import { GAS_LIMIT, RPC_MUMBAI, sourceMinterAddress, walletPrivateKey } from "@/constants";
+import {
+  GAS_LIMIT,
+  RPC_MUMBAI,
+  openMarketAddress,
+  sourceMinterAddress,
+  walletPrivateKey,
+} from "@/constants";
 import { OpenMarket__factory } from "@/contracts";
 import { JsonRpcProvider, ethers } from "ethers";
 
 export async function POST(request: Request) {
-  const { price, tokenId, amount } = await request.json();
+  const { tokenId, unitValue, amount } = await request.json();
   const provider = new JsonRpcProvider(RPC_MUMBAI);
   const contract_factory = OpenMarket__factory.connect(
-    sourceMinterAddress,
+    openMarketAddress,
     provider
   );
   const wallet = new ethers.Wallet(walletPrivateKey, provider);
   const contract = contract_factory.connect(wallet);
 
   try {
-    const transaction = await contract.sellMyUnits(tokenId, amount, price, GAS_LIMIT);
+    const transaction = await contract.sellMyUnits(
+      Number(tokenId),
+      Number(amount),
+      Number(unitValue),
+      GAS_LIMIT
+    );
     console.log("transaction: ", transaction);
     const tx = await transaction.wait();
     console.log("tx: ", tx);

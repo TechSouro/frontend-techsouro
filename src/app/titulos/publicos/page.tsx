@@ -1,7 +1,9 @@
 import { Title } from "@/components/Title";
 import { TituloCard } from "@/components/TituloCard";
+import { useRouter } from "next/navigation";
 
 export default function Publicos() {
+  const { push } = useRouter();
   const titulos = [
     {
       id: 1,
@@ -22,7 +24,11 @@ export default function Publicos() {
       </p>
       <div className="grid grid-cols-2 gap-3 mt-16">
         {titulos.map((e, i) => (
-          <TituloCard titulo={e} key={i} />
+          <TituloCard
+            titulo={e}
+            key={i}
+            onClick={() => push(`/titulos/${e.id}`)}
+          />
         ))}
       </div>
     </div>

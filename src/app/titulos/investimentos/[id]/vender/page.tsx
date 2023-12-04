@@ -47,7 +47,7 @@ export default function Vender({ params }: any) {
         </div>
         <div className="w-full flex flex-col items-start gap-4">
           <h1
-            children={"Insira a quantidade de cotas desejada"}
+            children={"Valor unitário:"}
             className="text-2xl font-bold"
           />
           <Controller

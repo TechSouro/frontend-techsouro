@@ -11,4 +11,4 @@ export const walletPrivateKey =
 export const RPC_MUMBAI =
   "https://polygon-mumbai.infura.io/v3/60786ed4ffd74c75b4b0bb369cde55f7";
 
-export const GAS_LIMIT = { gasLimit: 3000000000 };
+export const GAS_LIMIT = { gasLimit:  5000000 };

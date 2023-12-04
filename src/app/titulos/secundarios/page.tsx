@@ -1,7 +1,22 @@
+"use client";
 import { Title } from "@/components/Title";
 import { TituloCard } from "@/components/TituloCard";
+import { useRouter } from "next/navigation";
 
 export default function Secundarios() {
+  const { push } = useRouter();
+  const titulos = [
+    {
+      id: 1,
+      title: "titulo",
+      titleType: "Misto, combina rentabilidade prefixada com variação do IPCA.",
+      rent: "6,5% ao ano",
+      minValue: "R$ 100,00",
+      yearsDuration: "5 anos",
+      totalAmount: "100 cotas",
+    },
+  ];
+
   return (
     <main className="flex min-h-screen bg-white bg-cover bg-no-repeat bg-center px-40">
       <div className="bg-[#6CF13F] min-h-screen w-[330px] flex flex-col items-start justify-center px-12">
@@ -21,7 +36,13 @@ export default function Secundarios() {
           se alinham com seus objetivos financeiros.
         </p>
         <div className="grid grid-cols-2 gap-3 mt-16">
-          <TituloCard />
+          {titulos.map((e, i) => (
+            <TituloCard
+              titulo={e}
+              key={i}
+              onClick={() => push(`/titulos/secundarios/${e.id}`)}
+            />
+          ))}
         </div>
       </div>
     </main>

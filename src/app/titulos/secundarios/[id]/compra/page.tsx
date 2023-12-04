@@ -2,6 +2,7 @@
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Form/Input";
 import { Title } from "@/components/Title";
+import { useSmartContext } from "@/contexts/SmartContext";
 import { useOpenMarket } from "@/hooks/useOpenMarket";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -12,12 +13,13 @@ export default function Compra({ params }: any) {
   const { onBuySecondary } = useOpenMarket();
 
   async function onBuy() {
-    const id = params.id;
+    const tokenId = params.id;
     console.log(amount);
-    console.log(id);
+    console.log(tokenId);
     try {
-      await onBuySecondary("", id, Number(amount));
-      return router.push(`/titulos/${id}/concluido`);
+      const payload = { tokenId, amount: Number(amount) };
+      await onBuySecondary(payload);
+      return router.push(`/titulos/${tokenId}/concluido`);
     } catch (error) {
       console.error(error);
     }

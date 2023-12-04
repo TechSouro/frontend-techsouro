@@ -1,7 +1,7 @@
 import { Button } from "../Button";
 import { Title } from "../Title";
 
-export function TituloCard({ titulo }: any) {
+export function TituloCard({ titulo, onClick }: any) {
   return (
     <div className="bg-[#E3E3E3] rounded-[20px] h-[440px] p-9 flex flex-col justify-between">
       <Title children={titulo.title} fontSize={24} />
@@ -34,9 +34,7 @@ export function TituloCard({ titulo }: any) {
         />
         <h1 className="font-medium text-lg" children={titulo.totalAmount} />
       </div>
-      <a href={`/titulos/${titulo.id}`} className="w-full">
-        <Button children={"Comprar Título"} color="white" />
-      </a>
+      <Button onClick={onClick} children={"Comprar Título"} color="white" />
     </div>
   );
 }

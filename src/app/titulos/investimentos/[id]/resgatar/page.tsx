@@ -17,7 +17,6 @@ export default function Resgatar({ params }: any) {
     const tokenId = params.id;
     const { amount, unitValue } = values;
     const payload = { tokenId, amount, unitValue };
-
     try {
       await onRetrieveInvestment(payload);
       return router.push(
@@ -55,7 +54,7 @@ export default function Resgatar({ params }: any) {
           <h1 children={"Você receberá:"} className="text-2xl font-bold" />
           <Controller
             control={control}
-            name="getAddress"
+            name="amount"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 placeholder="18,405 DREX"
@@ -70,7 +69,7 @@ export default function Resgatar({ params }: any) {
           <h1 children={"Seu endereço:"} className="text-2xl font-bold" />
           <Controller
             control={control}
-            name="amount"
+            name="address"
             render={({ field: { onChange, onBlur } }) => (
               <Input
                 placeholder="0xC364...D2C8"

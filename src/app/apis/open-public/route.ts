@@ -2,6 +2,7 @@ import {
   GAS_LIMIT,
   RPC_MUMBAI,
   sourceMinterAddress,
+  tesouroDiretoAddress,
   walletPrivateKey,
 } from "@/constants";
 import { TesouroDireto__factory } from "@/contracts";
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
   console.log(tokenId);
   const provider = new JsonRpcProvider(RPC_MUMBAI);
   const contract_factory = TesouroDireto__factory.connect(
-    sourceMinterAddress,
+    tesouroDiretoAddress,
     provider
   );
   const wallet = new ethers.Wallet(walletPrivateKey, provider);

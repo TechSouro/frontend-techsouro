@@ -4,8 +4,7 @@ import { JsonRpcProvider, ethers } from "ethers";
 
 export async function POST(request: Request) {
   const payload = await request.json();
-  console.log(payload);
-  const { minValue, yearsDuration, totalAmount, rent, titleType } = payload;
+  const { minValue, yearsDuration, totalAmount, rent } = payload;
   const provider = new JsonRpcProvider(RPC_MUMBAI);
   const contract_factory = SourceMinter__factory.connect(
     sourceMinterAddress,

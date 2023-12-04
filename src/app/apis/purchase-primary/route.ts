@@ -1,4 +1,4 @@
-import { GAS_LIMIT, RPC_MUMBAI, sourceMinterAddress, walletPrivateKey } from "@/constants";
+import { GAS_LIMIT, RPC_MUMBAI, openMarketAddress, walletPrivateKey } from "@/constants";
 import { OpenMarket__factory } from "@/contracts";
 import { JsonRpcProvider, ethers } from "ethers";
 
@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const { tokenId, amount } = await request.json();
   const provider = new JsonRpcProvider(RPC_MUMBAI);
   const contract_factory = OpenMarket__factory.connect(
-    sourceMinterAddress,
+    openMarketAddress,
     provider
   );
   const wallet = new ethers.Wallet(walletPrivateKey, provider);

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   
 
   try {
-    const transaction = await contract.purchasePrimary(tokenId, amount, GAS_LIMIT);
+    const transaction = await contract.purchasePrimary(Number(tokenId), Number(amount), GAS_LIMIT);
     console.log("transaction: ", transaction);
     const tx = await transaction.wait();
     console.log("tx: ", tx);

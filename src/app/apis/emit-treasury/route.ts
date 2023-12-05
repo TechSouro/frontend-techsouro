@@ -18,13 +18,17 @@ export async function POST(request: Request) {
   const wallet = new ethers.Wallet(walletPrivateKey, provider);
   const contract = contract_factory.connect(wallet);
 
+  const daySec = 86400;
+  const daysYears = 365.25 * Number(yearsDuration);
+  const years = Math.floor(daysYears * daySec);
+
   const data = {
-    _type: 1,
+    _type: 0,
     _apy: Number(rent),
     _avlbTokens: Number(totalAmount),
     _creation: 0,
     _minInvestment: Number(minValue),
-    _validThru: Number(yearsDuration),
+    _validThru: years,
   };
 
   try {

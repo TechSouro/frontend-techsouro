@@ -1,12 +1,12 @@
-export const sourceMinterAddress = "0xb7d2e16991e6d7d9359844A29414a65B2A95F082";
-export const openMarketAddress = "0x66DFdf05c7Dbe94Eab11E0756a1d18033F1EE37d";
+export const sourceMinterAddress = "0xcEAa3d6D54E78590c43E6BEC1A6BbAa0B1157Fce";
+export const openMarketAddress = "0x45c41FeDC33e85047B60D448FC4eF16981822A09";
 export const tesouroDiretoAddress =
-  "0x15dCaa45f49f318531e72D3CD59738e4c0dC0Cfc";
+  "0x4978A4140DF1245d19430BAe86Aa954bD33BCf07";
 export const destinationMinterAddress =
-  "0xb7d2e16991e6d7d9359844A29414a65B2A95F082";
+  "0xcEAa3d6D54E78590c43E6BEC1A6BbAa0B1157Fce";
 
   export const walletPrivateKey =
-  "dab96de4f73b6b7ca2183ca6527e85538e71b5cbc93c176363e8b3fc73e033f6";
+  "a6e6d3fd58a1793ace222cc4a0b7ebd31aceeaebb6a678401f7a23e44124f468";
 
 export const RPC_SEPOLIA =
   "https://eth-sepolia.g.alchemy.com/v2/RJGBTAhBjghEFs3MeHXwd6IgV6e2aMjJ";

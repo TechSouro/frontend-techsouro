@@ -7,8 +7,10 @@ export function useTesouroDireto() {
   async function onEmitTreasury(payload: any) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/emit-treasury", payload);
+      const { data } = await axios.post("/apis/emit-treasury", payload);
       setIsLoading(false);
+      console.log(data)
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);

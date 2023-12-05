@@ -5,6 +5,7 @@ import { Title } from "@/components/Title";
 import { useSmartContext } from "@/contexts/SmartContext";
 import { useSourceMinter } from "@/hooks/useSourceMinter";
 import { useTesouroDireto } from "@/hooks/useTesouroDireto";
+import { getTxLogs } from "@/utils/getTxLogs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -28,9 +29,9 @@ export default function Emitir() {
 
   async function onEmit() {
     try {
-      await onOpenPublicOffer(1000);
       await onEmitTreasury(data);
-      push("/emitir/concluido");
+      await onOpenPublicOffer(1);
+      return push("/emitir/concluido");
     } catch (error) {
       console.error(error);
     }
@@ -38,7 +39,7 @@ export default function Emitir() {
 
   async function onEmitDrex() {
     try {
-      console.log(data)
+      console.log(data);
       await onEmission(data);
       push("/emitir/concluido");
     } catch (error) {

@@ -1,9 +1,9 @@
-export const sourceMinterAddress = "0xcEAa3d6D54E78590c43E6BEC1A6BbAa0B1157Fce";
-export const openMarketAddress = "0x23f455bCFFA666cBE80e40bF81B8A32e8E6D6759";
+export const sourceMinterAddress = "0x83E9975B1d03cbfE57cDd7bB34bB73f9ae34F12e";
+export const openMarketAddress = "0x1B6eaa6C2DaB9293A17e543314900B86a6C1E5d0";
 export const tesouroDiretoAddress =
-  "0xF4f8a542d6807Cd5A916B63571C8D826764591A2";
+  "0xcd95aeE273bc527AA045c68063483f4E5A8a4812";
 export const destinationMinterAddress =
-  "0x4c5586e87A59525680e0b2008a5ed4862C5Ea5C7";
+  "0x83E9975B1d03cbfE57cDd7bB34bB73f9ae34F12e";
 
   export const walletPrivateKey =
   "a6e6d3fd58a1793ace222cc4a0b7ebd31aceeaebb6a678401f7a23e44124f468";

@@ -13,6 +13,11 @@ function secToDays(secs: number) {
   return secs / segundosEmUmDia;
 }
 
+function timestampToYear(timestamp: number): number {
+  const date = new Date(timestamp);
+  return date.getFullYear();
+}
+
 function timestampToDate(timestamp: number) {
   const sec = Math.floor((timestamp / 1000) % 60);
   const min = Math.floor((timestamp / (1000 * 60)) % 60);
@@ -32,4 +37,5 @@ export const DateFormat = {
   isoToTimestamp,
   secToDays,
   timestampToDate,
+  timestampToYear
 };

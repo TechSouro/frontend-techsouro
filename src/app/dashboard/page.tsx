@@ -15,9 +15,7 @@ export default function Dashboard() {
     { title: "Meus Investimentos", icon: "", link: "/titulos/investimentos" },
   ];
 
-  useEffect(() => {
-    if (!user) push("/");
-  }, []);
+  if (!user) push("/");
 
   return (
     <main className="flex min-h-screen flex-col bg-white bg-cover bg-no-repeat bg-center items-start justify-center px-40">

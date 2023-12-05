@@ -10,6 +10,7 @@ type Props = {
   disabled?: boolean;
   fontHeight?: string;
   height?: string;
+  loading?: boolean;
 };
 
 export function Button({
@@ -22,6 +23,7 @@ export function Button({
   height = "h-[80px]",
   disabled,
   fontHeight,
+  loading,
 }: Props) {
   return (
     <button
@@ -48,7 +50,7 @@ export function Button({
         fontHeight
       )}
     >
-      {children}
+      {loading ? "Loading..." : children}
     </button>
   );
 }

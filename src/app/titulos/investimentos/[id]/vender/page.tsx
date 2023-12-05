@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 
 export default function Vender({ params }: any) {
   const router = useRouter();
-  const { onSellMyUnits } = useOpenMarket();
+  const { onSellMyUnits, isLoading } = useOpenMarket();
 
   async function onSell(values: any) {
     const tokenId = params.id;
@@ -15,8 +15,10 @@ export default function Vender({ params }: any) {
     console.log(tokenId);
     try {
       const payload = { tokenId, amount, unitValue };
-      await onSellMyUnits(payload);
-      return router.push(`/titulos/investimentos/${tokenId}/vender/concluido`);
+      const hash = await onSellMyUnits(payload);
+      return router.push(
+        `/titulos/investimentos/${tokenId}/vender/concluido?h=${hash}`
+      );
     } catch (error) {
       console.error(error);
     }
@@ -46,10 +48,7 @@ export default function Vender({ params }: any) {
           />
         </div>
         <div className="w-full flex flex-col items-start gap-4">
-          <h1
-            children={"Valor unitário:"}
-            className="text-2xl font-bold"
-          />
+          <h1 children={"Valor unitário:"} className="text-2xl font-bold" />
           <Controller
             control={control}
             name="unitValue"
@@ -81,7 +80,12 @@ export default function Vender({ params }: any) {
             )}
           />
         </div>
-        <Button type="submit" children={"Vender Título"} color="green" />
+        <Button
+          loading={isLoading}
+          type="submit"
+          children={"Vender Título"}
+          color="green"
+        />
       </form>
     </div>
   );

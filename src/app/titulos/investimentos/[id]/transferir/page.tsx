@@ -9,7 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 
 export default function Transferir({ params }: any) {
   const router = useRouter();
-  const { onSafeTransferFrom } = useOpenMarket();
+  const { onSafeTransferFrom, isLoading } = useOpenMarket();
   const { address } = useSmartContext();
   const newAddress = AddressUtils.hideAddress(address);
 
@@ -17,9 +17,9 @@ export default function Transferir({ params }: any) {
     const tokenId = params.id;
     try {
       const newValues = { ...values, tokenId };
-      await onSafeTransferFrom(newValues);
+      const hash = await onSafeTransferFrom(newValues);
       return router.push(
-        `/titulos/investimentos/${tokenId}/transferir/concluido`
+        `/titulos/investimentos/${tokenId}/transferir/concluido?h=${hash}`
       );
     } catch (error) {
       console.error(error);
@@ -85,7 +85,12 @@ export default function Transferir({ params }: any) {
             )}
           />
         </div>
-        <Button type="submit" children={"Transferir Título"} color="green" />
+        <Button
+          loading={isLoading}
+          type="submit"
+          children={"Transferir Título"}
+          color="green"
+        />
       </form>
     </div>
   );

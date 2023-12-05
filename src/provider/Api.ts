@@ -2,8 +2,13 @@ import axios from "axios";
 import https from "https";
 
 export const Api = axios.create({
-  baseURL: "API",
+  baseURL:
+    "https://8aa9-2804-431-cfef-80ae-7c6c-1470-b379-d7f2.ngrok-free.app/api",
   httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+  headers: {
+    "ngrok-skip-browser-warning": "*",
+    "Access-Control-Allow-Origin": "*",
+  },
 });
 
 export function setBearerToken(bearerToken: string) {

@@ -1,21 +1,34 @@
 "use client";
 import { Title } from "@/components/Title";
 import { TituloCard } from "@/components/TituloCard";
+import { DateFormat } from "@/helpers/DateFormat";
+import { StorageHelper } from "@/helpers/StorageHelper";
+import { TitlesService } from "@/services";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function Secundarios() {
   const { push } = useRouter();
-  const titulos = [
-    {
-      id: 1,
-      title: "titulo",
-      titleType: "Misto, combina rentabilidade prefixada com variação do IPCA.",
-      rent: "6,5% ao ano",
-      minValue: "R$ 100,00",
-      yearsDuration: "5 anos",
-      totalAmount: "100 cotas",
-    },
-  ];
+  const [titles, setTitles] = useState([]);
+
+  useEffect(() => {
+    async function getTitles() {
+      const { data } = await TitlesService.getSecondarySales();
+      const titles = data.map((e: any) => ({
+        id: e.token_id,
+        minValue: e.price,
+        totalAmount: e.available,
+        title: `Titulo #${e.token_id}`,
+        titleType:
+          "Misto, combina rentabilidade prefixada com variação do IPCA.",
+        rent: "6,5% ao ano",
+        yearsDuration: `${DateFormat.timestampToYear(e.duration)} anos`,
+      }));
+      setTitles(titles);
+      StorageHelper.setItem("secondarySales", titles);
+    }
+    getTitles();
+  }, []);
 
   return (
     <main className="flex min-h-screen bg-white bg-cover bg-no-repeat bg-center px-40">
@@ -36,7 +49,7 @@ export default function Secundarios() {
           você gerencie seus investimentos de maneira ágil e inteligente.
         </p>
         <div className="grid grid-cols-2 gap-3 mt-16">
-          {titulos.map((e, i) => (
+          {titles?.map((e: any, i) => (
             <TituloCard
               titulo={e}
               key={i}

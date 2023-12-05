@@ -10,14 +10,14 @@ import toast from "react-hot-toast";
 export default function Compra({ params }: any) {
   const [amount, setAmount] = useState(0);
   const router = useRouter();
-  const { onPurchasePrimary } = useOpenMarket();
+  const { onPurchasePrimary, isLoading } = useOpenMarket();
 
   async function onBuy() {
     const tokenId = params.id;
     try {
       const payload = { tokenId, amount };
-      await onPurchasePrimary(payload);
-      return router.push(`/titulos/${tokenId}/concluido`);
+      const hash = await onPurchasePrimary(payload);
+      return router.push(`/titulos/${tokenId}/concluido?h=${hash}`);
     } catch (error) {
       toast.error("Erro ao comprar o titulo!");
       console.error(error);
@@ -36,7 +36,12 @@ export default function Compra({ params }: any) {
           onChange={({ target }) => setAmount(Number(target.value))}
           value={amount}
         />
-        <Button onClick={onBuy} children={"Confirmar compra"} color="green" />
+        <Button
+          loading={isLoading}
+          onClick={onBuy}
+          children={"Confirmar compra"}
+          color="green"
+        />
       </div>
     </div>
   );

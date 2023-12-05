@@ -1,7 +1,22 @@
+"use client";
 import Tabela from "@/components/Tabela";
 import { Title } from "@/components/Title";
+import { StorageHelper } from "@/helpers/StorageHelper";
+import { useEffect, useState } from "react";
 
-export default function TituloId() {
+export default function TituloId({ params }: any) {
+  const [title, setTitle] = useState<any>();
+
+  useEffect(() => {
+    async function getTitle() {
+      const titles = await StorageHelper.getItem("secondarySales");
+      const title = titles.find((e: any) => e.id === Number(params.id));
+      setTitle(title);
+      console.log(title);
+    }
+    getTitle();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-[url('/bgs/titulo_bg.png')] bg-cover bg-no-repeat bg-center p-40 relative">
       <div className="flex gap-32 mb-10">
@@ -42,9 +57,9 @@ export default function TituloId() {
           </p>
         </div>
       </div>
-      <Tabela />
+      <Tabela title={title} />
       <a
-        href={`/titulos/secundarios/${1}/compra`}
+        href={`/titulos/secundarios/${title.id}/compra`}
         className="text-3xl font-bold text-[rgba(17,17,17,.50)] absolute bottom-20 right-40 cursor-pointer"
       >
         PROSSEGUIR

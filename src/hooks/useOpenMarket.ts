@@ -7,8 +7,9 @@ export function useOpenMarket() {
   async function onPurchasePrimary(payload: any) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/purchase-primary", payload);
+      const { data } = await axios.post("/apis/purchase-primary", payload);
       setIsLoading(false);
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);
@@ -19,8 +20,9 @@ export function useOpenMarket() {
   async function onBuySecondary(payload: any) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/buy-secondary", payload);
+      const { data } = await axios.post("/apis/buy-secondary", payload);
       setIsLoading(false);
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);
@@ -31,8 +33,9 @@ export function useOpenMarket() {
   async function onSellMyUnits(payload: any) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/sell-units", payload);
+      const { data } = await axios.post("/apis/sell-units", payload);
       setIsLoading(false);
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);
@@ -43,8 +46,9 @@ export function useOpenMarket() {
   async function onSafeTransferFrom(payload: any) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/safe-transfer", payload);
+      const { data } = await axios.post("/apis/safe-transfer", payload);
       setIsLoading(false);
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);
@@ -55,8 +59,9 @@ export function useOpenMarket() {
   async function onRetrieveInvestment(payload: any) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/retrieve", payload);
+      const { data } = await axios.post("/apis/retrieve", payload);
       setIsLoading(false);
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);

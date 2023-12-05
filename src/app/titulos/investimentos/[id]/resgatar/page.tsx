@@ -9,7 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 
 export default function Resgatar({ params }: any) {
   const router = useRouter();
-  const { onRetrieveInvestment } = useOpenMarket();
+  const { onRetrieveInvestment, isLoading } = useOpenMarket();
   const { address } = useSmartContext();
   const newAddress = AddressUtils.hideAddress(address);
 
@@ -18,9 +18,9 @@ export default function Resgatar({ params }: any) {
     const { amount, unitValue } = values;
     const payload = { tokenId, amount, unitValue };
     try {
-      await onRetrieveInvestment(payload);
+      const hash = await onRetrieveInvestment(payload);
       return router.push(
-        `/titulos/investimentos/${tokenId}/resgatar/concluido`
+        `/titulos/investimentos/${tokenId}/resgatar/concluido?h=${hash}`
       );
     } catch (error) {
       console.error(error);
@@ -80,7 +80,12 @@ export default function Resgatar({ params }: any) {
             )}
           />
         </div>
-        <Button type="submit" children={"Transferir Título"} color="green" />
+        <Button
+          loading={isLoading}
+          type="submit"
+          children={"Transferir Título"}
+          color="green"
+        />
       </form>
     </div>
   );

@@ -10,16 +10,14 @@ import { useState } from "react";
 export default function Compra({ params }: any) {
   const [amount, setAmount] = useState("");
   const router = useRouter();
-  const { onBuySecondary } = useOpenMarket();
+  const { onBuySecondary, isLoading } = useOpenMarket();
 
   async function onBuy() {
     const tokenId = params.id;
-    console.log(amount);
-    console.log(tokenId);
     try {
       const payload = { tokenId, amount: Number(amount) };
-      await onBuySecondary(payload);
-      return router.push(`/titulos/${tokenId}/concluido`);
+      const hash = await onBuySecondary(payload);
+      return router.push(`/titulos/${tokenId}/concluido?h=${hash}`);
     } catch (error) {
       console.error(error);
     }
@@ -37,7 +35,12 @@ export default function Compra({ params }: any) {
           onChange={({ target }) => setAmount(target.value)}
           value={amount}
         />
-        <Button onClick={onBuy} children={"Confirmar compra"} color="green" />
+        <Button
+          loading={isLoading}
+          onClick={onBuy}
+          children={"Confirmar compra"}
+          color="green"
+        />
       </div>
     </div>
   );

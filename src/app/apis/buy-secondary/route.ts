@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   try {
     const transaction = await contract.buySecondary(
       wallet.address,
-      tokenId,
+      Number(tokenId),
       amount,
       GAS_LIMIT
     );

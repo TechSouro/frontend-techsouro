@@ -15,8 +15,8 @@ export default function Emitir() {
   const { handleSubmit, control } = useForm();
   const [select, setSelect] = useState();
   const [data, setData] = useState();
-  const { onEmitTreasury, onOpenPublicOffer } = useTesouroDireto();
-  const { onEmission } = useSourceMinter();
+  const { onEmitTreasury, onOpenPublicOffer, isLoading } = useTesouroDireto();
+  const { onEmission, isLoading: loadingSource } = useSourceMinter();
   const { push } = useRouter();
 
   async function handleSelect({ target }: any) {
@@ -145,12 +145,14 @@ export default function Emitir() {
           <div className="flex flex-col gap-8">
             <Button
               type="submit"
+              loading={isLoading}
               children={"Emitir meu Título"}
               color="green"
               onClick={onEmit}
             />
             <Button
               type="submit"
+              loading={loadingSource}
               children={"Emitir meu Título no DREX"}
               color="black"
               onClick={onEmitDrex}

@@ -30,10 +30,10 @@ export default function Secundarios() {
         </ul>
       </div>
       <div className="m-16">
-        <Title children={"Oferta Pública"} className="mb-4" />
+        <Title children={"Mercado Secundário"} className="mb-4" />
         <p className="text-2xl font-medium">
-          Descubra as novas ofertas disponíveis e participe de investimentos que
-          se alinham com seus objetivos financeiros.
+          O Mercado Secundário oferece flexibilidade e liquidez, permitindo que
+          você gerencie seus investimentos de maneira ágil e inteligente.
         </p>
         <div className="grid grid-cols-2 gap-3 mt-16">
           {titulos.map((e, i) => (

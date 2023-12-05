@@ -2,15 +2,22 @@
 import { Title } from "@/components/Title";
 import { useSmartContext } from "@/contexts/SmartContext";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { user } = useSmartContext();
+  const { push } = useRouter();
   const four = [
     { title: "Emissão de Títulos", icon: "", link: "/emitir" },
     { title: "Oferta Pública", icon: "", link: "/titulos" },
     { title: "Mercado Secundário", icon: "", link: "/titulos/secundarios" },
     { title: "Meus Investimentos", icon: "", link: "/titulos/investimentos" },
   ];
+
+  useEffect(() => {
+    if (!user) push("/");
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col bg-white bg-cover bg-no-repeat bg-center items-start justify-center px-40">

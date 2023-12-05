@@ -5,6 +5,7 @@ import { Title } from "@/components/Title";
 import { useSmartContext } from "@/contexts/SmartContext";
 import { useSourceMinter } from "@/hooks/useSourceMinter";
 import { useTesouroDireto } from "@/hooks/useTesouroDireto";
+import { getLastNumber } from "@/utils/getLastNumber";
 import { getTxLogs } from "@/utils/getTxLogs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,9 +30,12 @@ export default function Emitir() {
 
   async function onEmit() {
     try {
-      await onEmitTreasury(data);
-      await onOpenPublicOffer(1);
-      return push("/emitir/concluido");
+      const hash = await onEmitTreasury(data);
+      const logs = await getTxLogs(hash);
+      const lastLog = logs?.logs[1].topics[1];
+      const tokenID = lastLog && (await getLastNumber(lastLog.toString()));
+      const tx = await onOpenPublicOffer(Number(tokenID));
+      push(`/emitir/concluido/?h=${tx}`);
     } catch (error) {
       console.error(error);
     }
@@ -39,9 +43,8 @@ export default function Emitir() {
 
   async function onEmitDrex() {
     try {
-      console.log(data);
-      await onEmission(data);
-      push("/emitir/concluido");
+      const tx = await onEmission(data);
+      push(`/emitir/drex/?h=${tx}`);
     } catch (error) {
       console.error(error);
     }

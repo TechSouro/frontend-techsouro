@@ -7,7 +7,6 @@ import { useSearchParams } from "next/navigation";
 export default function Concluido() {
   const searchParams = useSearchParams();
   const hash = searchParams.get("h");
-
   return (
     <main className="flex min-h-screen flex-col bg-cadastro_success bg-cover bg-no-repeat bg-center items-center justify-center bg-white">
       <div className="w-[650px] flex flex-col gap-8 items-center justify-center">
@@ -24,10 +23,10 @@ export default function Concluido() {
           </a>
           <a
             target="_blank"
-            href={`https://sepolia.etherscan.io/tx/${hash}`}
+            href={`https://ccip.chain.link/msg/${hash}`}
             className="w-full"
           >
-            <Button children={"Ver transação"} color="black" />
+            <Button children={"Acompanhe a transação"} color="black" />
           </a>
         </div>
       </div>

@@ -7,7 +7,8 @@ export function useSourceMinter() {
   async function onEmission(payload: any) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/emission", payload);
+      const { data } = await axios.post("/apis/emission", payload);
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);

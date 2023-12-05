@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   const contract = contract_factory.connect(wallet);
 
   try {
-    const transaction = await contract.openPublicOffer(2, GAS_LIMIT);
+    const transaction = await contract.openPublicOffer(tokenId, GAS_LIMIT);
     console.log("transaction: ", transaction);
     const tx = await transaction.wait();
     console.log("tx: ", tx);

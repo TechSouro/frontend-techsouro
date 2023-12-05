@@ -9,7 +9,7 @@ export function useTesouroDireto() {
     try {
       const { data } = await axios.post("/apis/emit-treasury", payload);
       setIsLoading(false);
-      console.log(data)
+      console.log(data);
       return data.hash;
     } catch (error: any) {
       setIsLoading(false);
@@ -21,8 +21,9 @@ export function useTesouroDireto() {
   async function onOpenPublicOffer(tokenId: number) {
     setIsLoading(true);
     try {
-      await axios.post("/apis/open-public", { tokenId });
+      const { data } = await axios.post("/apis/open-public", { tokenId });
       setIsLoading(false);
+      return data.hash;
     } catch (error: any) {
       setIsLoading(false);
       console.error(error);

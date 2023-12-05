@@ -27,8 +27,10 @@ export default function Home() {
 
   useEffect(() => {
     if (open) {
-      setTimeout(() => {
+      setTimeout(async () => {
         (document.getElementById("qrcode") as any).close();
+        await login();
+        return router.push("/dashboard");
       }, 5000);
     }
   }, [open]);

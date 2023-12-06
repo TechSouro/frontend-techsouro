@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     sourceMinterAddress,
     provider
   );
-  const wallet = new ethers.Wallet(walletPrivateKey!, provider);
+  const wallet = new ethers.Wallet(walletPrivateKey, provider);
   const contract = contract_factory.connect(wallet);
 
   try {

@@ -1,4 +1,4 @@
-import { GAS_LIMIT, RPC_MUMBAI, RPC_SEPOLIA, sourceMinterAddress, walletPrivateKey } from "@/constants";
+import { GAS_LIMIT, RPC_MUMBAI, sourceMinterAddress, walletPrivateKey } from "@/constants";
 import { SourceMinter__factory } from "@/contracts";
 import { JsonRpcProvider, ethers } from "ethers";
 

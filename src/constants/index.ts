@@ -9,7 +9,7 @@ export const destinationMinterAddress =
   "a6e6d3fd58a1793ace222cc4a0b7ebd31aceeaebb6a678401f7a23e44124f468";
 
 export const RPC_SEPOLIA =
-  "https://eth-sepolia.g.alchemy.com/v2/RJGBTAhBjghEFs3MeHXwd6IgV6e2aMjJ";
+  "https://eth-sepolia-public.unifra.io";
 
 export const RPC_MUMBAI =
   "https://polygon-mumbai.infura.io/v3/60786ed4ffd74c75b4b0bb369cde55f7";

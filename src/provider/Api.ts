@@ -3,7 +3,7 @@ import https from "https";
 
 export const Api = axios.create({
   baseURL:
-    "https://8aa9-2804-431-cfef-80ae-7c6c-1470-b379-d7f2.ngrok-free.app/api",
+    "https://aabe-2804-431-cfef-80ae-6dd8-81e0-8ec1-7ffd.ngrok-free.app/api",
   httpsAgent: new https.Agent({ rejectUnauthorized: false }),
   headers: {
     "ngrok-skip-browser-warning": "*",

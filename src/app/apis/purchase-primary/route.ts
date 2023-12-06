@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     openMarketAddress,
     provider
   );
-  const wallet = new ethers.Wallet(walletPrivateKey, provider);
+  const wallet = new ethers.Wallet(walletPrivateKey!, provider);
   const contract = contract_factory.connect(wallet);
   
 

@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     provider
   );
   console.log(payload)
-  const wallet = new ethers.Wallet(walletPrivateKey, provider);
+  const wallet = new ethers.Wallet(walletPrivateKey!, provider);
   const contract = contract_factory.connect(wallet);
   console.log(contract)
 

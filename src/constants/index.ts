@@ -5,7 +5,7 @@ export const tesouroDiretoAddress =
 export const destinationMinterAddress =
   "0x83E9975B1d03cbfE57cDd7bB34bB73f9ae34F12e";
 
-export const walletPrivateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY || "";
+export const walletPrivateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY;
 
 export const RPC_SEPOLIA = "https://eth-sepolia-public.unifra.io";
 

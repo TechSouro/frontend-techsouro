@@ -2,10 +2,8 @@
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Form/Input";
 import { Title } from "@/components/Title";
-import { useSmartContext } from "@/contexts/SmartContext";
 import { useSourceMinter } from "@/hooks/useSourceMinter";
 import { useTesouroDireto } from "@/hooks/useTesouroDireto";
-import { getLastNumber } from "@/utils/getLastNumber";
 import { getTxLogs } from "@/utils/getTxLogs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

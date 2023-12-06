@@ -33,8 +33,8 @@ export default function Emitir() {
       const hash = await onEmitTreasury(data);
       const logs = await getTxLogs(hash);
       const lastLog = logs?.logs[1].topics[1];
-      const tokenID = lastLog && (await getLastNumber(lastLog.toString()));
-      const tx = await onOpenPublicOffer(Number(tokenID));
+      const tokenId = parseInt(lastLog!, 16);
+      const tx = await onOpenPublicOffer(tokenId);
       push(`/emitir/concluido/?h=${tx}`);
     } catch (error) {
       console.error(error);

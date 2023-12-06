@@ -1,4 +1,9 @@
-import { GAS_LIMIT, RPC_SEPOLIA, tesouroDiretoAddress } from "@/constants";
+import {
+  GAS_LIMIT,
+  RPC_SEPOLIA,
+  tesouroDiretoAddress,
+  walletPrivateKey,
+} from "@/constants";
 import { TesouroDireto__factory } from "@/contracts";
 import { JsonRpcProvider, ethers } from "ethers";
 
@@ -10,7 +15,7 @@ export async function POST(request: Request) {
     tesouroDiretoAddress,
     provider
   );
-  const wallet = new ethers.Wallet(process.env.walletPrivateKey!, provider);
+  const wallet = new ethers.Wallet(walletPrivateKey!, provider);
   const contract = contract_factory.connect(wallet);
 
   const daySec = 86400;
